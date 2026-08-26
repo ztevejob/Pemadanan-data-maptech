@@ -22,7 +22,7 @@
     </script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS CDN (untuk parser CSV/Excel) -->
+    <!-- SheetJS CDN (untuk parser CSV) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,6 +38,7 @@
         
         /* Sidebar transition style */
         #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
+        #mainContent { transition: margin-left 0.3s ease; }
         .sidebar-collapsed .sidebar-text { display: none; }
         .sidebar-collapsed .sidebar-logo-text { display: none; }
         .sidebar-collapsed { width: 5rem !important; }
@@ -52,7 +53,7 @@
     <div class="flex flex-1 min-h-screen relative overflow-x-hidden">
 
         <!-- ================= SIDEBAR ================= -->
-        <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 fixed md:sticky top-0 h-screen z-50 transform -translate-x-full md:translate-x-0 transition-all duration-300">
+        <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 fixed top-0 left-0 h-screen z-50 transform -translate-x-full md:translate-x-0 transition-all duration-300">
             <!-- Sidebar Header / Brand -->
             <div class="h-16 px-4 flex items-center justify-between border-b border-slate-800">
                 <div class="flex items-center space-x-3">
@@ -97,7 +98,7 @@
         </aside>
 
         <!-- ================= MAIN CONTENT AREA ================= -->
-        <div class="flex-1 flex flex-col min-w-0">
+        <div id="mainContent" class="flex-1 flex flex-col min-w-0 md:ml-64">
 
             <!-- Top Header / Navbar -->
             <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 border-b border-slate-800">
@@ -117,17 +118,10 @@
                     <!-- Action Toolbar -->
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Button Refresh Data Online -->
-                        <button onclick="fetchOnlineData()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5" title="Sync / Sync Data Online">
+                        <button onclick="fetchOnlineData()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5" title="Refresh Data Online">
                             <i class="fa-solid fa-rotate"></i>
-                            <span class="hidden sm:inline">Sync Online</span>
+                            <span class="hidden sm:inline">Refresh</span>
                         </button>
-
-                        <!-- File Upload Button -->
-                        <label class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow cursor-pointer transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-file-import"></i>
-                            <span class="hidden sm:inline">Upload Manual</span>
-                            <input type="file" id="fileInput" accept=".json,.csv,.xlsx,.xls" class="hidden" onchange="handleFileUpload(event)">
-                        </label>
 
                         <!-- Dark Mode Toggle -->
                         <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 dark:text-amber-300 text-sm font-semibold p-2 rounded-lg border border-slate-700 transition" title="Mode Gelap / Terang">
@@ -138,16 +132,6 @@
                         <button onclick="resetFilters()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 px-3 rounded-lg border border-slate-700 transition flex items-center space-x-1.5">
                             <i class="fa-solid fa-rotate-right"></i>
                             <span class="hidden sm:inline">Reset</span>
-                        </button>
-
-                        <!-- Export CSV -->
-                        <button onclick="exportToCSV()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-file-csv"></i><span class="hidden md:inline">CSV</span>
-                        </button>
-
-                        <!-- Export Excel -->
-                        <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-file-excel"></i><span class="hidden md:inline">Excel</span>
                         </button>
                     </div>
                 </div>
@@ -420,7 +404,7 @@
                 const parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
 
                 if (parsedData && parsedData.length > 0) {
-                    processUploadedData(parsedData, `Berhasil memuat ${parsedData.length} data online dari Google Sheets!`);
+                    processUploadedData(parsedData, `Berhasil memuat ${parsedData.length} data online terbaru!`);
                 } else {
                     showUploadAlert('Data Google Sheets kosong atau tidak valid.', 'error');
                 }
@@ -433,12 +417,18 @@
         // --- SIDEBAR TOGGLE LOGIC ---
         function toggleSidebarCollapse() {
             const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
             const icon = document.getElementById('collapseIcon');
             sidebar.classList.toggle('sidebar-collapsed');
+            
             if (sidebar.classList.contains('sidebar-collapsed')) {
                 icon.className = 'fa-solid fa-chevron-right text-sm';
+                mainContent.classList.remove('md:ml-64');
+                mainContent.classList.add('md:ml-20');
             } else {
                 icon.className = 'fa-solid fa-chevron-left text-sm';
+                mainContent.classList.remove('md:ml-20');
+                mainContent.classList.add('md:ml-64');
             }
         }
 
@@ -491,43 +481,6 @@
             if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon text-amber-400';
         }
 
-        // --- MANUAL UPLOAD LOGIC ---
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const fileName = file.name;
-            const fileExt = fileName.split('.').pop().toLowerCase();
-
-            if (fileExt === 'json') {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const parsed = JSON.parse(e.target.result);
-                        if (Array.isArray(parsed) && parsed.length > 0) processUploadedData(parsed, `Berhasil mengunggah ${parsed.length} data JSON!`);
-                        else showUploadAlert('Format file JSON tidak valid.', 'error');
-                    } catch (err) { showUploadAlert('Gagal membaca file JSON!', 'error'); }
-                };
-                reader.readAsText(file);
-            } else if (fileExt === 'xlsx' || fileExt === 'xls' || fileExt === 'csv') {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const parsed = XLSX.utils.sheet_to_json(worksheet);
-                        if (parsed && parsed.length > 0) processUploadedData(parsed, `Berhasil mengunggah ${parsed.length} data Excel/CSV!`);
-                        else showUploadAlert('Sheet kosong!', 'error');
-                    } catch (err) { showUploadAlert('Gagal membaca file Excel/CSV!', 'error'); }
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                showUploadAlert('Format file tidak didukung! Gunakan JSON, CSV, atau Excel.', 'error');
-            }
-            event.target.value = '';
-        }
-
         function processUploadedData(data, message) {
             rawData = data.map((item, idx) => ({
                 "No.": item["No."] || item["No"] || idx + 1,
@@ -567,7 +520,7 @@
         // --- DASHBOARD LOGIC ---
         function initDashboard() {
             initDarkMode();
-            fetchOnlineData(); // Ambil data online otomatis saat halaman dimuat
+            fetchOnlineData();
         }
 
         function populateFilterDropdowns() {
@@ -801,28 +754,6 @@
 
         function signOut() {
             alert("Anda telah keluar dari sistem.");
-        }
-
-        function exportToCSV() {
-            if (filteredData.length === 0) return alert("Tidak ada data untuk diekspor!");
-            const headers = Object.keys(filteredData[0]).join(",");
-            const rows = filteredData.map(obj => Object.values(obj).map(v => `"${v}"`).join(","));
-            const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "data_karyawan.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportToExcel() {
-            if (filteredData.length === 0) return alert("Tidak ada data untuk diekspor!");
-            const worksheet = XLSX.utils.json_to_sheet(filteredData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Karyawan");
-            XLSX.writeFile(workbook, "data_karyawan.xlsx");
         }
 
         // Initialize Application
