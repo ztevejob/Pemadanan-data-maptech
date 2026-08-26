@@ -65,6 +65,825 @@
                 </button>
             </div>
 
+            <!-- Sidebar Navigation Links -->
+            <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebarNav">
+                <a href="javascript:void(0)" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium transition" title="Dashboard">
+                    <i class="fa-solid fa-chart-line text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Dashboard</span>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTab('table', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Data Karyawan">
+                    <i class="fa-solid fa-users text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Data Karyawan</span>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTab('charts', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Analisis Store">
+                    <i class="fa-solid fa-chart-pie text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Analisis Store</span>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTab('filter', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Filter & Report">
+                    <i class="fa-solid fa-filter text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Filter & Report</span>
+                </a>
+            </nav>
+
+            <div class="p-3 border-t border-slate-800">
+                <button onclick="signOut()" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition" title="Sign Out">
+                    <i class="fa-solid fa-right-from-bracket text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm font-medium">Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ================= MAIN CONTENT AREA ================= -->
+        <div id="mainContent" class="flex-1 flex flex-col min-w-0 md:ml-64">
+
+            <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 border-b border-slate-800">
+                <div class="px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-300 hover:text-white p-2 focus:outline-none">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-base sm:text-lg font-bold tracking-tight" id="pageTitle">Dashboard Pemadanan Karyawan</h1>
+                            <p class="text-xs text-slate-400 hidden sm:block">Monitoring & Analisis Distribusi SDM Toko</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="fetchOnlineData()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5" title="Refresh Data Online">
+                            <i class="fa-solid fa-rotate"></i>
+                            <span class="hidden sm:inline">Refresh</span>
+                        </button>
+                        <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 dark:text-amber-300 text-sm font-semibold p-2 rounded-lg border border-slate-700 transition" title="Mode Gelap / Terang">
+                            <i id="darkModeIcon" class="fa-solid fa-moon"></i>
+                        </button>
+                        <button onclick="resetFilters()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2 px-3 rounded-lg border border-slate-700 transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span class="hidden sm:inline">Reset</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="px-4 sm:px-6 py-6 flex-grow space-y-6">
+
+                <!-- Alert Banner -->
+                <div id="uploadAlert" class="hidden p-4 rounded-xl border flex items-center justify-between transition-all">
+                    <div class="flex items-center space-x-3">
+                        <i id="uploadAlertIcon" class="text-lg"></i>
+                        <span id="uploadAlertMsg" class="text-xs font-medium"></span>
+                    </div>
+                    <button onclick="document.getElementById('uploadAlert').classList.add('hidden')" class="text-xs opacity-70 hover:opacity-100">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- KPI Cards Section -->
+                <div id="kpiSection" class="content-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-4 transition hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Karyawan</p>
+                                <h3 id="kpiTotal" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">0</h3>
+                            </div>
+                            <div class="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                                <i class="fa-solid fa-user-group text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2"><span id="kpiTotalPct" class="text-indigo-600 dark:text-indigo-400 font-semibold">100%</span> dari total data</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-4 transition hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Store</p>
+                                <h3 id="kpiStores" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">0</h3>
+                            </div>
+                            <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-lg">
+                                <i class="fa-solid fa-store text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Toko terdaftar</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-4 transition hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Jabatan / Posisi</p>
+                                <h3 id="kpiPositions" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">0</h3>
+                            </div>
+                            <div class="p-2.5 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-lg">
+                                <i class="fa-solid fa-briefcase text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Variasi peran</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-4 transition hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Regional Head</p>
+                                <h3 id="kpiRH" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">0</h3>
+                            </div>
+                            <div class="p-2.5 bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 rounded-lg">
+                                <i class="fa-solid fa-user-tie text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Wilayah/RH aktif</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-4 transition hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Area Manager</p>
+                                <h3 id="kpiAM" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">0</h3>
+                            </div>
+                            <div class="p-2.5 bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 rounded-lg">
+                                <i class="fa-solid fa-sitemap text-lg"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Area Manager aktif</p>
+                    </div>
+                </div>
+
+                <!-- Filter Panel Section -->
+                <div id="filterSection" class="content-section bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-5">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-700/60">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-filter text-indigo-600 dark:text-indigo-400"></i>
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Filter Data Karyawan</h2>
+                        </div>
+                        <span id="activeFilterBadge" class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-full">
+                            Menampilkan semua data
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-3">
+                        <div class="xl:col-span-2">
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Cari Nama / NIK / Store</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                </span>
+                                <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Ketik kata kunci..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Type Store</label>
+                            <select id="filterTypeStore" onchange="applyFilters()" class="w-full py-1.5 px-2.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="">-- Semua Type --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Regional Head (RH)</label>
+                            <select id="filterRH" onchange="applyFilters()" class="w-full py-1.5 px-2.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="">-- Semua RH --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Area Manager (AM)</label>
+                            <select id="filterAM" onchange="applyFilters()" class="w-full py-1.5 px-2.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="">-- Semua AM --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Jabatan / Posisi</label>
+                            <select id="filterPosition" onchange="applyFilters()" class="w-full py-1.5 px-2.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="">-- Semua Posisi --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Trainer HO</label>
+                            <select id="filterTrainerHO" onchange="applyFilters()" class="w-full py-1.5 px-2.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                <option value="">-- Semua Trainer --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div id="chartsSection" class="content-section grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Chart 1: Jumlah Toko Unik Per Type Store -->
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-store text-sky-500"></i>
+                                <span>Jumlah Toko per Type Store</span>
+                            </h3>
+                        </div>
+                        <div class="relative flex-grow min-h-[260px]">
+                            <canvas id="chartStoreCount"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Distribusi Karyawan per Type Store -->
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-pie text-indigo-500"></i>
+                                <span>Karyawan per Type Store</span>
+                            </h3>
+                        </div>
+                        <div class="relative flex-grow flex items-center justify-center min-h-[260px]">
+                            <canvas id="chartTypeStore"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 3: Sebaran Jabatan Karyawan -->
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-bar text-emerald-500"></i>
+                                <span>Sebaran Jabatan Karyawan</span>
+                            </h3>
+                        </div>
+                        <div class="relative flex-grow min-h-[260px]">
+                            <canvas id="chartPositions"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table Section -->
+                <div id="tableSection" class="content-section bg-white dark:bg-darkcard rounded-xl shadow-sm border border-slate-200/80 dark:border-darkborder overflow-hidden flex flex-col">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-table text-indigo-600 dark:text-indigo-400"></i>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Data Karyawan</h3>
+                            <span id="filteredCountBadge" class="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Data</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs">
+                            <label for="pageSize" class="text-slate-600 dark:text-slate-400 font-medium">Tampilkan:</label>
+                            <select id="pageSize" onchange="changePageSize()" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="10">10</option>
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 w-12 text-center">No</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[200px]">Nama Karyawan</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[100px]">NIK</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[140px]">Jabatan</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[260px]">Store & Ringkasan</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[110px]">Type Store</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[150px]">Regional Head</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[150px]">Area Manager</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[150px]">Work Exp</th>
+                                    <th scope="col" class="py-3 px-4 min-w-[200px]">SEED Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-slate-600 dark:text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+                        <div id="paginationInfo" class="text-slate-500 dark:text-slate-400">
+                            Menampilkan 0 - 0 dari 0 data
+                        </div>
+                        <div class="flex items-center space-x-1" id="paginationControls">
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-darkcard border-t border-slate-200 dark:border-darkborder py-4 mt-auto transition-colors duration-200">
+                <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+                    &copy; 2026 Interactive Pemadanan Dashboard &bull; Live Google Sheets Data
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const ONLINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8IQlrRqX-PBTGq7rYZMDi25rjSHtJ_CXKEWVlqYFmuRDyiFA19gKdjqUxxZ9G2fylTl-cPnW2mcJB/pub?output=csv';
+
+        function isValidValue(val) {
+            if (val === null || val === undefined) return false;
+            const str = String(val).trim();
+            const invalidValues = ["", "0", "-", "null", "undefined", "unassigned", "n/a", "#N/A"];
+            return !invalidValues.includes(str.toLowerCase());
+        }
+
+        function escapeHTML(str) {
+            if (!isValidValue(str)) return '-';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let rawData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let pageSize = 25;
+        let charts = {};
+
+        const palette = ['#6366f1', '#10b981', '#f59e0b', '#06b6d4', '#8b5cf6', '#ec4899', '#3b82f6', '#84cc16'];
+
+        function switchTab(tab, element) {
+            const sections = document.querySelectorAll('.content-section');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white');
+                el.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            });
+
+            if (element) {
+                element.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+                element.classList.add('bg-indigo-600', 'text-white');
+            }
+
+            const pageTitle = document.getElementById('pageTitle');
+
+            if (tab === 'dashboard') {
+                sections.forEach(sec => sec.classList.remove('hidden'));
+                pageTitle.textContent = "Dashboard Pemadanan Karyawan";
+            } else if (tab === 'table') {
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('filterSection').classList.remove('hidden');
+                document.getElementById('tableSection').classList.remove('hidden');
+                pageTitle.textContent = "Data Karyawan";
+            } else if (tab === 'charts') {
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('chartsSection').classList.remove('hidden');
+                pageTitle.textContent = "Analisis Store & Grafis";
+            } else if (tab === 'filter') {
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('filterSection').classList.remove('hidden');
+                document.getElementById('tableSection').classList.remove('hidden');
+                pageTitle.textContent = "Filter Data & Laporan";
+            }
+
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar');
+                const backdrop = document.getElementById('sidebarBackdrop');
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        async function fetchOnlineData() {
+            showUploadAlert('Sedang mengambil data terbaru dari Google Sheets...', 'success');
+            try {
+                const cacheBusterUrl = `${ONLINE_CSV_URL}&_ts=${new Date().getTime()}`;
+                const response = await fetch(cacheBusterUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Gagal terhubung ke Google Sheets (Status: ${response.status})`);
+                }
+                
+                const csvText = await response.text();
+                const workbook = XLSX.read(csvText, { type: 'string' });
+                const firstSheetName = workbook.SheetNames[0];
+                const parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
+
+                if (parsedData && parsedData.length > 0) {
+                    processUploadedData(parsedData, `Berhasil memuat ${parsedData.length} baris data!`);
+                } else {
+                    showUploadAlert('Data Google Sheets kosong atau tidak valid.', 'error');
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                showUploadAlert(`Gagal memuat data online: ${err.message}`, 'error');
+            }
+        }
+
+        function toggleSidebarCollapse() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const icon = document.getElementById('collapseIcon');
+            sidebar.classList.toggle('sidebar-collapsed');
+            
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                icon.className = 'fa-solid fa-chevron-right text-sm';
+                mainContent.classList.remove('md:ml-64');
+                mainContent.classList.add('md:ml-20');
+            } else {
+                icon.className = 'fa-solid fa-chevron-left text-sm';
+                mainContent.classList.remove('md:ml-20');
+                mainContent.classList.add('md:ml-64');
+            }
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        function initDarkMode() {
+            const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+                updateDarkModeUI(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                updateDarkModeUI(false);
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (isDarkMode) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                localStorage.setItem('theme', 'light');
+                updateDarkModeUI(false);
+            } else {
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateDarkModeUI(true);
+            }
+            renderCharts();
+        }
+
+        function updateDarkModeUI(isDark) {
+            const icon = document.getElementById('darkModeIcon');
+            if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon text-amber-400';
+        }
+
+        function processUploadedData(data, message) {
+            let validIndex = 1;
+            rawData = data
+                .map(item => ({
+                    "Store": item["Store"] || item["Toko"] || "",
+                    "Nama": item["Nama"] || item["Nama Karyawan"] || "",
+                    "NIK": item["NIK"] || "",
+                    "Work Experience": item["Work Experience"] || item["Pengalaman"] || "",
+                    "SEED Registered Email": item["SEED Registered Email"] || item["Email"] || "",
+                    "Positions": item["Positions"] || item["Jabatan"] || item["Posisi"] || "",
+                    "RH": item["RH"] || item["Regional Head"] || "",
+                    "AM": item["AM"] || item["Area Manager"] || "",
+                    "Type Store": item["Type Store"] || item["Tipe Store"] || "",
+                    "Trainer HO": item["Trainer HO"] || ""
+                }))
+                .filter(item => isValidValue(item["Nama"]) || isValidValue(item["NIK"]))
+                .map(item => ({ "No.": validIndex++, ...item }));
+
+            populateFilterDropdowns();
+            resetFilters();
+            showUploadAlert(`Data berhasil dibersihkan. Memuat ${rawData.length} Karyawan valid!`, 'success');
+        }
+
+        function showUploadAlert(msg, type) {
+            const alert = document.getElementById('uploadAlert');
+            const alertMsg = document.getElementById('uploadAlertMsg');
+            const alertIcon = document.getElementById('uploadAlertIcon');
+
+            alert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200', 'dark:bg-emerald-950/60', 'dark:text-emerald-200', 'dark:border-emerald-800', 'dark:bg-rose-950/60', 'dark:text-rose-200', 'dark:border-rose-800');
+
+            if (type === 'success') {
+                alert.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'dark:bg-emerald-950/60', 'dark:text-emerald-200', 'dark:border-emerald-800');
+                alertIcon.className = 'fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400';
+            } else {
+                alert.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-200', 'dark:bg-rose-950/60', 'dark:text-rose-200', 'dark:border-rose-800');
+                alertIcon.className = 'fa-solid fa-triangle-exclamation text-rose-600 dark:text-rose-400';
+            }
+            alertMsg.textContent = msg;
+        }
+
+        function initDashboard() {
+            initDarkMode();
+            fetchOnlineData();
+        }
+
+        function populateFilterDropdowns() {
+            const getUniqueValid = (key) => [...new Set(rawData.map(d => d[key]))].filter(isValidValue).sort();
+            fillSelect('filterTypeStore', getUniqueValid('Type Store'));
+            fillSelect('filterRH', getUniqueValid('RH'));
+            fillSelect('filterAM', getUniqueValid('AM'));
+            fillSelect('filterPosition', getUniqueValid('Positions'));
+            fillSelect('filterTrainerHO', getUniqueValid('Trainer HO'));
+        }
+
+        function fillSelect(elementId, options) {
+            const select = document.getElementById(elementId);
+            const currentValue = select.value;
+            select.innerHTML = select.options[0].outerHTML;
+            options.forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt;
+                el.textContent = opt;
+                select.appendChild(el);
+            });
+            select.value = currentValue;
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('filterSearch').value.toLowerCase().trim();
+            const typeStore = document.getElementById('filterTypeStore').value;
+            const rh = document.getElementById('filterRH').value;
+            const am = document.getElementById('filterAM').value;
+            const position = document.getElementById('filterPosition').value;
+            const trainerHO = document.getElementById('filterTrainerHO').value;
+
+            filteredData = rawData.filter(item => {
+                const matchSearch = !search || 
+                    (isValidValue(item["Nama"]) && item["Nama"].toLowerCase().includes(search)) ||
+                    (isValidValue(item["NIK"]) && item["NIK"].toString().toLowerCase().includes(search)) ||
+                    (isValidValue(item["Store"]) && item["Store"].toLowerCase().includes(search));
+
+                return matchSearch &&
+                       (!typeStore || item["Type Store"] === typeStore) &&
+                       (!rh || item["RH"] === rh) &&
+                       (!am || item["AM"] === am) &&
+                       (!position || item["Positions"] === position) &&
+                       (!trainerHO || item["Trainer HO"] === trainerHO);
+            });
+
+            currentPage = 1;
+            updateKPIs();
+            renderCharts();
+            renderTable();
+            updateFilterBadge();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterTypeStore').value = '';
+            document.getElementById('filterRH').value = '';
+            document.getElementById('filterAM').value = '';
+            document.getElementById('filterPosition').value = '';
+            document.getElementById('filterTrainerHO').value = '';
+            applyFilters();
+        }
+
+        function updateFilterBadge() {
+            const badge = document.getElementById('activeFilterBadge');
+            badge.textContent = filteredData.length === rawData.length ? 'Menampilkan semua data' : `Filtered: ${filteredData.length} dari ${rawData.length} data`;
+        }
+
+        function countUniqueValid(data, key) {
+            const validItems = data.map(d => d[key]).filter(isValidValue);
+            return new Set(validItems).size;
+        }
+
+        function updateKPIs() {
+            document.getElementById('kpiTotal').textContent = filteredData.length.toLocaleString();
+            document.getElementById('kpiStores').textContent = countUniqueValid(filteredData, 'Store').toLocaleString();
+            document.getElementById('kpiPositions').textContent = countUniqueValid(filteredData, 'Positions').toLocaleString();
+            document.getElementById('kpiRH').textContent = countUniqueValid(filteredData, 'RH').toLocaleString();
+            document.getElementById('kpiAM').textContent = countUniqueValid(filteredData, 'AM').toLocaleString();
+
+            const totalPct = rawData.length > 0 ? ((filteredData.length / rawData.length) * 100).toFixed(1) : 0;
+            document.getElementById('kpiTotalPct').textContent = `${totalPct}%`;
+        }
+
+        function groupByValid(data, key) {
+            return data.reduce((acc, curr) => {
+                const val = curr[key];
+                if (isValidValue(val)) {
+                    acc[val] = (acc[val] || 0) + 1;
+                }
+                return acc;
+            }, {});
+        }
+
+        function getUniqueStoresPerType(data) {
+            const storeMap = {};
+            data.forEach(item => {
+                const type = item["Type Store"];
+                const store = item["Store"];
+                if (isValidValue(type) && isValidValue(store)) {
+                    if (!storeMap[type]) {
+                        storeMap[type] = new Set();
+                    }
+                    storeMap[type].add(store);
+                }
+            });
+
+            const result = {};
+            for (const type in storeMap) {
+                result[type] = storeMap[type].size;
+            }
+            return result;
+        }
+
+        function renderCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#cbd5e1' : '#475569';
+            const gridColor = isDark ? '#334155' : '#f1f5f9';
+
+            const storeCounts = getUniqueStoresPerType(filteredData);
+            const ctxStoreCount = document.getElementById('chartStoreCount').getContext('2d');
+            if (charts.storeCount) charts.storeCount.destroy();
+            charts.storeCount = new Chart(ctxStoreCount, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(storeCounts),
+                    datasets: [{
+                        label: 'Jumlah Toko',
+                        data: Object.values(storeCounts),
+                        backgroundColor: '#0284c7',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        y: { ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }
+                    }
+                }
+            });
+
+            const typeCounts = groupByValid(filteredData, 'Type Store');
+            const ctxType = document.getElementById('chartTypeStore').getContext('2d');
+            if (charts.typeStore) charts.typeStore.destroy();
+            charts.typeStore = new Chart(ctxType, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeCounts),
+                    datasets: [{
+                        data: Object.values(typeCounts),
+                        backgroundColor: palette,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Inter', size: 11 } } } }
+                }
+            });
+
+            const posCounts = groupByValid(filteredData, 'Positions');
+            const sortedPos = Object.entries(posCounts).sort((a,b) => b[1] - a[1]);
+            const ctxPos = document.getElementById('chartPositions').getContext('2d');
+            if (charts.positions) charts.positions.destroy();
+            charts.positions = new Chart(ctxPos, {
+                type: 'bar',
+                data: {
+                    labels: sortedPos.map(d => d[0]),
+                    datasets: [{
+                        label: 'Jumlah Karyawan',
+                        data: sortedPos.map(d => d[1]),
+                        backgroundColor: '#10b981',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                    }
+                }
+            });
+        }
+
+        function getStoreEmployeeCount(store) {
+            if (!isValidValue(store)) return 0;
+            return rawData.filter(item => item["Store"] === store).length;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            document.getElementById('filteredCountBadge').textContent = `${filteredData.length} Data`;
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="py-8 text-center text-slate-400">
+                            <i class="fa-solid fa-inbox text-3xl mb-2"></i>
+                            <p class="text-xs">Tidak ada data karyawan yang cocok</p>
+                        </td>
+                    </tr>`;
+            } else {
+                pageData.forEach((row, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-4 text-center font-medium">${start + index + 1}</td>
+                        <td class="py-2.5 px-4 font-semibold text-slate-900 dark:text-slate-100">${escapeHTML(row["Nama"])}</td>
+                        <td class="py-2.5 px-4 font-mono text-slate-500 dark:text-slate-400">${escapeHTML(row["NIK"])}</td>
+                        <td class="py-2.5 px-4">${escapeHTML(row["Positions"])}</td>
+                        <td class="py-2.5 px-4 font-medium text-slate-800 dark:text-slate-200">
+                            <div>${escapeHTML(row["Store"])}</div>
+                            <div class="mt-0.5 text-[10px] text-slate-400">Karyawan Toko: <span class="font-bold text-indigo-500">${getStoreEmployeeCount(row["Store"])}</span></div>
+                        </td>
+                        <td class="py-2.5 px-4">
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                ${escapeHTML(row["Type Store"])}
+                            </span>
+                        </td>
+                        <td class="py-2.5 px-4">${escapeHTML(row["RH"])}</td>
+                        <td class="py-2.5 px-4">${escapeHTML(row["AM"])}</td>
+                        <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">${escapeHTML(row["Work Experience"])}</td>
+                        <td class="py-2.5 px-4 text-indigo-600 dark:text-indigo-400">${escapeHTML(row["SEED Registered Email"])}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            renderPagination();
+        }
+
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById('pageSize').value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderPagination() {
+            const total = filteredData.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            const start = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+            const end = Math.min(currentPage * pageSize, total);
+
+            document.getElementById('paginationInfo').textContent = `Menampilkan ${start} - ${end} dari ${total} data`;
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = '';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-2.5 py-1 rounded border text-xs ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); } };
+            controls.appendChild(prevBtn);
+
+            const pageBadge = document.createElement('span');
+            pageBadge.className = 'px-3 py-1 font-semibold text-xs text-slate-700 dark:text-slate-200';
+            pageBadge.textContent = `${currentPage} / ${totalPages}`;
+            controls.appendChild(pageBadge);
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-2.5 py-1 rounded border text-xs ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); } };
+            controls.appendChild(nextBtn);
+        }
+
+        function signOut() {
+            alert("Anda telah keluar dari sistem.");
+        }
+
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        #sidebar { transition: width 0.3s ease, transform 0.3s ease; }
+        #mainContent { transition: margin-left 0.3s ease; }
+        .sidebar-collapsed .sidebar-text { display: none; }
+        .sidebar-collapsed .sidebar-logo-text { display: none; }
+        .sidebar-collapsed { width: 5rem !important; }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden"></div>
+
+    <div class="flex flex-1 min-h-screen relative overflow-x-hidden">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 fixed top-0 left-0 h-screen z-50 transform -translate-x-full md:translate-x-0 transition-all duration-300">
+            <div class="h-16 px-4 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl flex-shrink-0">
+                        <i class="fa-solid fa-users-gear text-lg"></i>
+                    </div>
+                    <span class="sidebar-logo-text font-bold text-white text-base tracking-wide truncate">Digimap HR</span>
+                </div>
+                <button onclick="toggleSidebarCollapse()" class="hidden md:flex text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i id="collapseIcon" class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+            </div>
+
             <!-- Sidebar Navigation Links (HANYA 3 MENU FOKUS) -->
             <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebarNav">
                 <a href="javascript:void(0)" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium transition" title="Dashboard">
