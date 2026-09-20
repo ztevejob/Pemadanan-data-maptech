@@ -42,9 +42,8 @@
         .sidebar-collapsed .sidebar-logo-text { display: none; }
         .sidebar-collapsed { width: 5rem !important; }
 
-        /* Fixed / Freeze Sidebar Style dengan Tembus Pandang Tegas */
         .glass-sidebar {
-            background: rgba(15, 23, 42, 0.85); /* Warna dipergelap sedikit agar kontras teks tinggi */
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -89,7 +88,7 @@
 
     <div class="flex flex-1 min-h-screen relative">
 
-        <!-- ================= SIDEBAR (FROZEN / FIXED Z-INDEX TINGGI) ================= -->
+        <!-- ================= SIDEBAR ================= -->
         <aside id="sidebar" class="w-64 glass-sidebar text-slate-100 flex flex-col fixed top-0 left-0 h-screen z-50 transform -translate-x-full md:translate-x-0 transition-all duration-300">
             <div class="h-16 px-4 flex items-center justify-between border-b border-slate-700/50">
                 <div class="flex items-center space-x-3 overflow-hidden">
@@ -103,11 +102,14 @@
                 </button>
             </div>
 
-            <!-- Sidebar Nav Links (Teks dibuat lebih terang/gelap tegas agar makin jelas) -->
             <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebarNav">
                 <a href="javascript:void(0)" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold transition shadow-md shadow-indigo-600/20" title="Dashboard">
                     <i class="fa-solid fa-chart-line text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Dashboard</span>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTab('profile', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Profil Saya">
+                    <i class="fa-solid fa-id-card text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Profil & Edit Toko</span>
                 </a>
                 <a href="javascript:void(0)" onclick="switchTab('table', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Data Karyawan">
                     <i class="fa-solid fa-users text-lg w-6 text-center"></i>
@@ -154,10 +156,6 @@
                         <button onclick="toggleDarkMode()" class="bg-slate-800/70 hover:bg-slate-700/80 text-amber-400 dark:text-amber-300 text-sm font-semibold p-2 rounded-lg border border-slate-700/50 transition backdrop-blur-sm" title="Mode Gelap / Terang">
                             <i id="darkModeIcon" class="fa-solid fa-moon"></i>
                         </button>
-                        <button onclick="resetFilters()" class="bg-slate-800/70 hover:bg-slate-700/80 text-slate-300 text-xs font-semibold py-2 px-3 rounded-lg border border-slate-700/50 transition flex items-center space-x-1.5 backdrop-blur-sm">
-                            <i class="fa-solid fa-rotate-right"></i>
-                            <span class="hidden sm:inline">Reset</span>
-                        </button>
                     </div>
                 </div>
             </header>
@@ -173,6 +171,77 @@
                     <button onclick="document.getElementById('uploadAlert').classList.add('hidden')" class="text-xs opacity-70 hover:opacity-100">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
+                </div>
+
+                <!-- ================= SECTION: PROFIL SAYA & EDIT DATA ================= -->
+                <div id="profileSection" class="content-section hidden space-y-6">
+                    <div class="glass-card rounded-xl shadow-lg p-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-6 border-b border-slate-200/50 dark:border-slate-700/50 gap-4">
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-id-badge text-indigo-600 dark:text-indigo-400"></i>
+                                    <span>Profil & Detail Karyawan</span>
+                                </h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kelola informasi nama dan lokasi toko Anda saat ini.</p>
+                            </div>
+                            <!-- Pencarian NIK/Email user untuk load profil -->
+                            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                                <input type="text" id="searchUserNik" placeholder="Masukkan NIK Anda..." class="px-3 py-1.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300/80 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <button onclick="loadUserProfile()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow transition">Cari</button>
+                            </div>
+                        </div>
+
+                        <!-- Form Detail Profil -->
+                        <div id="profileFormContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Nama Lengkap</label>
+                                <input type="text" id="profNama" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">NIK</label>
+                                <input type="text" id="profNik" readonly class="w-full px-3 py-2 text-xs bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-400 cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Store / Lokasi Toko</label>
+                                <input type="text" id="profStore" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: Digimap Tunjungan Plaza">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Type Store</label>
+                                <input type="text" id="profTypeStore" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Positions / Jabatan</label>
+                                <input type="text" id="profPositions" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">SEED Registered Email</label>
+                                <input type="text" id="profEmail" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Work Experience</label>
+                                <input type="text" id="profWorkExp" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Regional Head (RH)</label>
+                                <input type="text" id="profRH" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Trainer HO</label>
+                                <input type="text" id="profTrainerHO" class="w-full px-3 py-2 text-xs bg-white/70 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100">
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                            <button onclick="detectGPSLocation()" class="bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs font-semibold py-2 px-4 rounded-lg shadow transition flex items-center space-x-2">
+                                <i class="fa-solid fa-location-crosshairs"></i>
+                                <span>Gunakan Lokasi GPS Saat Ini</span>
+                            </button>
+                            <button onclick="saveUserProfile()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-5 rounded-lg shadow transition flex items-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Simpan Perubahan ke Sheet</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- KPI Cards Section -->
@@ -487,11 +556,19 @@
             const sidebarHeaderIcon = document.getElementById('sidebarHeaderIcon');
 
             if (tab === 'dashboard') {
-                sections.forEach(sec => sec.classList.remove('hidden'));
-                document.getElementById('mapSection').classList.add('hidden');
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('kpiSection').classList.remove('hidden');
+                document.getElementById('filterSection').classList.remove('hidden');
+                document.getElementById('chartsSection').classList.remove('hidden');
                 pageTitle.textContent = "Dashboard Pemadanan Karyawan";
                 sidebarHeaderTitle.textContent = "Dashboard";
                 sidebarHeaderIcon.className = "fa-solid fa-chart-line text-lg";
+            } else if (tab === 'profile') {
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('profileSection').classList.remove('hidden');
+                pageTitle.textContent = "Profil & Edit Toko Pengguna";
+                sidebarHeaderTitle.textContent = "Profil Saya";
+                sidebarHeaderIcon.className = "fa-solid fa-id-card text-lg";
             } else if (tab === 'table') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('filterSection').classList.remove('hidden');
@@ -633,7 +710,7 @@
 
             populateFilterDropdowns();
             resetFilters();
-            showUploadAlert(`Data berhasil dibersihkan. Memuat ${rawData.length} Karyawan valid!`, 'success');
+            showUploadAlert(`Data berhasil dimuat. Sebanyak ${rawData.length} Karyawan valid terindex!`, 'success');
         }
 
         function showUploadAlert(msg, type) {
@@ -656,6 +733,91 @@
         function initDashboard() {
             initDarkMode();
             fetchOnlineData();
+        }
+
+        // ================= FITUR PROFIL SAYA & EDIT DATA =================
+        function loadUserProfile() {
+            const nikInput = document.getElementById('searchUserNik').value.trim().toLowerCase();
+            if (!nikInput) {
+                alert("Silakan masukkan NIK Anda terlebih dahulu.");
+                return;
+            }
+
+            const user = rawData.find(item => String(item["NIK"]).toLowerCase() === nikInput);
+            if (user) {
+                document.getElementById('profNama').value = user["Nama"] || '';
+                document.getElementById('profNik').value = user["NIK"] || '';
+                document.getElementById('profStore').value = user["Store"] || '';
+                document.getElementById('profTypeStore').value = user["Type Store"] || '';
+                document.getElementById('profPositions').value = user["Positions"] || '';
+                document.getElementById('profEmail').value = user["SEED Registered Email"] || '';
+                document.getElementById('profWorkExp').value = user["Work Experience"] || '';
+                document.getElementById('profRH').value = user["RH"] || '';
+                document.getElementById('profTrainerHO').value = user["Trainer HO"] || '';
+                showUploadAlert(`Profil untuk NIK ${user["NIK"]} berhasil dimuat.`, 'success');
+            } else {
+                alert("Karyawan dengan NIK tersebut tidak ditemukan di data.");
+            }
+        }
+
+        function detectGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    document.getElementById('profStore').value = `Koordinat GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+                    showUploadAlert("Lokasi koordinat GPS berhasil disematkan ke Store.", 'success');
+                }, function(error) {
+                    alert("Gagal mendeteksi lokasi: " + error.message);
+                });
+            } else {
+                alert("Geolocation tidak didukung oleh browser ini.");
+            }
+        }
+
+        function saveUserProfile() {
+            const nik = document.getElementById('profNik').value;
+            if (!nik) {
+                alert("Belum ada profil yang dimuat atau NIK kosong.");
+                return;
+            }
+
+            const updatedData = {
+                Nama: document.getElementById('profNama').value,
+                Store: document.getElementById('profStore').value,
+                TypeStore: document.getElementById('profTypeStore').value,
+                Positions: document.getElementById('profPositions').value,
+                Email: document.getElementById('profEmail').value,
+                WorkExp: document.getElementById('profWorkExp').value,
+                RH: document.getElementById('profRH').value,
+                TrainerHO: document.getElementById('profTrainerHO').value
+            };
+
+            // Jika menggunakan Google Apps Script Web App, hubungkan via google.script.run:
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(response) {
+                        alert(response);
+                        fetchOnlineData(); // Refresh data dari sheet
+                    })
+                    .updateEmployeeData(nik, updatedData);
+            } else {
+                // Simulasi update lokal jika dibuka secara mandiri di browser statis
+                const index = rawData.findIndex(item => String(item["NIK"]) === String(nik));
+                if (index !== -1) {
+                    rawData[index]["Nama"] = updatedData.Nama;
+                    rawData[index]["Store"] = updatedData.Store;
+                    rawData[index]["Type Store"] = updatedData.TypeStore;
+                    rawData[index]["Positions"] = updatedData.Positions;
+                    rawData[index]["SEED Registered Email"] = updatedData.Email;
+                    rawData[index]["Work Experience"] = updatedData.WorkExp;
+                    rawData[index]["RH"] = updatedData.RH;
+                    rawData[index]["Trainer HO"] = updatedData.TrainerHO;
+                    
+                    applyFilters();
+                    showUploadAlert("Perubahan profil berhasil disimpan secara lokal!", 'success');
+                }
+            }
         }
 
         function populateFilterDropdowns() {
