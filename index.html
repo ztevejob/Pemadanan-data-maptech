@@ -405,18 +405,20 @@
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-slate-900 dark:text-white">Edit Profil Mandiri</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Anda hanya dapat melihat dan memperbarui data Anda sendiri di sini.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Anda dapat mengubah nama (jika typo) dan memperbarui profil Anda di sini.</p>
                         </div>
                     </div>
 
                     <div class="space-y-4 text-xs">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block font-medium text-slate-500 mb-1">Nama Karyawan (Read-only)</label>
-                                <input type="text" id="profileNama" disabled class="w-full p-2.5 border rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 font-medium">
+                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Karyawan (Dapat diedit jika typo)</label>
+                                <!-- Atribut disabled dihapus agar nama dapat diketik/diubah -->
+                                <input type="text" id="profileNama" class="w-full p-2.5 border rounded-xl bg-white/80 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-medium">
                             </div>
                             <div>
-                                <label class="block font-medium text-slate-500 mb-1">NIK (Read-only)</label>
+                                <label class="block font-medium text-slate-500 mb-1">NIK (Dikunci / Read-only)</label>
+                                <!-- NIK tetap dikunci demi keamanan sistem login -->
                                 <input type="text" id="profileNik" disabled class="w-full p-2.5 border rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 font-medium">
                             </div>
                         </div>
@@ -552,7 +554,6 @@
 
             errDiv.classList.add('hidden');
 
-            // Panggil backend apps script untuk verifikasi NIK
             google.script.run
                 .withSuccessHandler(function(result) {
                     if (result && result.found) {
@@ -649,8 +650,9 @@
 
             const updatedData = {
                 nik: currentUser.nik,
-                store: document.getElementById('profileStore').value,
-                email: document.getElementById('profileEmail').value
+                nama: document.getElementById('profileNama').value.trim(),
+                store: document.getElementById('profileStore').value.trim(),
+                email: document.getElementById('profileEmail').value.trim()
             };
 
             showUploadAlert('Menyimpan perubahan profil ke Google Sheets...', 'success');
@@ -658,9 +660,11 @@
             google.script.run
                 .withSuccessHandler(function(response) {
                     showUploadAlert(response, 'success');
+                    currentUser.nama = updatedData.nama;
                     currentUser.store = updatedData.store;
                     currentUser.email = updatedData.email;
-                    fetchOnlineData(); // Refresh data dashboard
+                    document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
+                    fetchOnlineData();
                 })
                 .withFailureHandler(function(err) {
                     showUploadAlert('Gagal menyimpan profil: ' + err.message, 'error');
