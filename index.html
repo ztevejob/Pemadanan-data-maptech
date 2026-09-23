@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pemadanan Karyawan</title>
+    <title>Dashboard Pemadanan Karyawan - Admin Novi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -83,21 +83,21 @@
 
 <body class="bg-gradient-to-br from-slate-100 via-slate-200 to-indigo-50/30 dark:from-slate-950 dark:via-darkbg dark:to-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200 overflow-x-auto">
 
-    <!-- ================= LOGIN OVERLAY (MANDIRI) ================= -->
+    <!-- ================= LOGIN OVERLAY (MANDIRI & ADMIN) ================= -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
             <div class="text-center mb-6">
                 <div class="bg-indigo-600 text-white w-12 h-12 rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-3">
-                    <i class="fa-solid fa-user-lock text-xl"></i>
+                    <i class="fa-solid fa-user-shield text-xl"></i>
                 </div>
-                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan Mandiri</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK Anda untuk mengakses dan memperbarui data profil Anda.</p>
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan & Admin</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK atau Kata Kunci Admin (misal: <strong>Novi</strong>) untuk mengakses sistem.</p>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nomor Induk Karyawan (NIK)</label>
-                    <input type="text" id="loginNikInput" placeholder="Contoh: 123456" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NIK / ID Akses Admin</label>
+                    <input type="text" id="loginNikInput" placeholder="Contoh: 123456 atau Novi" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                 </div>
                 <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition">
                     Masuk ke Dashboard
@@ -145,7 +145,7 @@
                 </a>
                 <a href="javascript:void(0)" onclick="switchTab('profile', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Profil & Edit Mandiri">
                     <i class="fa-solid fa-user-pen text-lg w-6 text-center"></i>
-                    <span class="sidebar-text text-sm">Edit Profil Saya</span>
+                    <span class="sidebar-text text-sm" id="navProfileText">Edit Profil Saya</span>
                 </a>
             </nav>
 
@@ -397,28 +397,26 @@
                     </div>
                 </div>
 
-                <!-- Section Profil & Edit Mandiri -->
+                <!-- Section Profil & Edit Mandiri / Admin -->
                 <div id="profileSection" class="content-section hidden glass-card rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
                     <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
-                            <i class="fa-solid fa-user-pen text-xl"></i>
+                            <i id="profileHeaderIcon" class="fa-solid fa-user-pen text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-white">Edit Profil Mandiri</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Anda dapat mengubah nama (jika typo) dan memperbarui profil Anda di sini.</p>
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white" id="profileFormTitle">Edit Profil Mandiri</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400" id="profileFormDesc">Anda dapat mengubah data profil di bawah ini.</p>
                         </div>
                     </div>
 
                     <div class="space-y-4 text-xs">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Karyawan (Dapat diedit jika typo)</label>
-                                <!-- Atribut disabled dihapus agar nama dapat diketik/diubah -->
+                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Karyawan</label>
                                 <input type="text" id="profileNama" class="w-full p-2.5 border rounded-xl bg-white/80 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-medium">
                             </div>
                             <div>
-                                <label class="block font-medium text-slate-500 mb-1">NIK (Dikunci / Read-only)</label>
-                                <!-- NIK tetap dikunci demi keamanan sistem login -->
+                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1" id="profileNikLabel">NIK (Read-only)</label>
                                 <input type="text" id="profileNik" disabled class="w-full p-2.5 border rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 font-medium">
                             </div>
                         </div>
@@ -480,6 +478,7 @@
                                     <th scope="col" class="py-3 px-4 min-w-[150px]">Area Manager</th>
                                     <th scope="col" class="py-3 px-4 min-w-[150px]">Work Exp</th>
                                     <th scope="col" class="py-3 px-4 min-w-[200px]">SEED Email</th>
+                                    <th scope="col" id="actionHeader" class="py-3 px-4 min-w-[80px] text-center hidden">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody" class="divide-y divide-slate-100/60 dark:divide-slate-700/40 text-slate-600 dark:text-slate-300">
@@ -516,6 +515,7 @@
         const ONLINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8IQlrRqX-PBTGq7rYZMDi25rjSHtJ_CXKEWVlqYFmuRDyiFA19gKdjqUxxZ9G2fylTl-cPnW2mcJB/pub?output=csv';
 
         let currentUser = null;
+        let selectedUserForEdit = null;
         let rawData = [];
         let filteredData = [];
         let currentPage = 1;
@@ -541,36 +541,88 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Fungsi Login Mandiri menggunakan Backend Apps Script
+        // Fungsi Login Mandiri & Admin Novi
         function handleLogin() {
             const nikInput = document.getElementById('loginNikInput').value.trim();
             const errDiv = document.getElementById('loginErrorMsg');
             
             if (!nikInput) {
-                errDiv.textContent = "Silakan masukkan NIK Anda terlebih dahulu.";
+                errDiv.textContent = "Silakan masukkan NIK atau User Admin terlebih dahulu.";
                 errDiv.classList.remove('hidden');
                 return;
             }
 
             errDiv.classList.add('hidden');
 
-            google.script.run
-                .withSuccessHandler(function(result) {
-                    if (result && result.found) {
-                        currentUser = result;
-                        document.getElementById('loginOverlay').classList.add('hidden');
-                        document.getElementById('userSessionBadge').textContent = `Login: ${result.nama} (${result.nik})`;
-                        initDashboard();
-                    } else {
-                        errDiv.textContent = "NIK tidak ditemukan di sistem database.";
+            // Pengecekan Khusus Akun Admin "Novi"
+            if (nikInput.toLowerCase() === 'novi' || nikInput.toLowerCase() === 'admin') {
+                currentUser = {
+                    nama: "Novi Riyanto",
+                    nik: "ADMIN",
+                    positions: "Head Office Trainer / Admin",
+                    store: "Head Office",
+                    email: "novi@admin.com",
+                    isAdmin: true
+                };
+
+                setupAdminAccess();
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('userSessionBadge').innerHTML = `<i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i> Admin Novi (Superuser)`;
+                initDashboard();
+                return;
+            }
+
+            // Login Karyawan Standar via Google Apps Script
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result && result.found) {
+                            currentUser = result;
+                            currentUser.isAdmin = false;
+                            document.getElementById('loginOverlay').classList.add('hidden');
+                            document.getElementById('userSessionBadge').textContent = `Login: ${result.nama} (${result.nik})`;
+                            initDashboard();
+                        } else {
+                            errDiv.textContent = "NIK tidak ditemukan di sistem database.";
+                            errDiv.classList.remove('hidden');
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        errDiv.textContent = "Terjadi kesalahan koneksi server.";
                         errDiv.classList.remove('hidden');
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    errDiv.textContent = "Terjadi kesalahan koneksi server.";
-                    errDiv.classList.remove('hidden');
-                })
-                .getEmployeeByNik(nikInput);
+                    })
+                    .getEmployeeByNik(nikInput);
+            } else {
+                // Fallback Mode Demo jika dijalankan secara lokal tanpa Google Apps Script Backend
+                currentUser = {
+                    nama: nikInput,
+                    nik: nikInput,
+                    positions: "Karyawan",
+                    store: "Store Demo",
+                    email: "user@demo.com",
+                    isAdmin: false
+                };
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
+                initDashboard();
+            }
+        }
+
+        function setupAdminAccess() {
+            document.getElementById('actionHeader').classList.remove('hidden');
+            document.getElementById('navProfileText').textContent = "Kelola Profil Karyawan";
+            document.getElementById('profileFormTitle').textContent = "Kelola / Edit Profil Karyawan (Admin Novi)";
+            document.getElementById('profileFormDesc').textContent = "Sebagai Admin, Anda dapat mengedit semua data karyawan di bawah ini.";
+            
+            // Buka semua field yang sebelumnya disabled untuk Admin
+            document.getElementById('profileNik').removeAttribute('disabled');
+            document.getElementById('profileNik').classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'text-slate-600');
+            document.getElementById('profileNik').classList.add('bg-white/80', 'dark:bg-slate-900/80');
+            document.getElementById('profileNikLabel').textContent = "NIK (Dapat Diedit Admin)";
+
+            document.getElementById('profilePos').removeAttribute('disabled');
+            document.getElementById('profilePos').classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'text-slate-600');
+            document.getElementById('profilePos').classList.add('bg-white/80', 'dark:bg-slate-900/80');
         }
 
         function switchTab(tab, element) {
@@ -622,8 +674,8 @@
             } else if (tab === 'profile') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('profileSection').classList.remove('hidden');
-                pageTitle.textContent = "Edit Profil Saya";
-                sidebarHeaderTitle.textContent = "Profil Saya";
+                pageTitle.textContent = currentUser && currentUser.isAdmin ? "Kelola Profil Karyawan" : "Edit Profil Saya";
+                sidebarHeaderTitle.textContent = currentUser && currentUser.isAdmin ? "Kelola Profil" : "Profil Saya";
                 sidebarHeaderIcon.className = "fa-solid fa-user-pen text-lg";
                 loadProfileForm();
             }
@@ -636,40 +688,59 @@
             }
         }
 
-        function loadProfileForm() {
-            if (!currentUser) return;
-            document.getElementById('profileNama').value = currentUser.nama || '';
-            document.getElementById('profileNik').value = currentUser.nik || '';
-            document.getElementById('profilePos').value = currentUser.positions || '';
-            document.getElementById('profileStore').value = currentUser.store || '';
-            document.getElementById('profileEmail').value = currentUser.email || '';
+        function editEmployeeByAdmin(nik) {
+            const emp = rawData.find(item => String(item.NIK).trim() === String(nik).trim());
+            if (emp) {
+                selectedUserForEdit = emp;
+                switchTab('profile');
+                loadProfileForm(emp);
+            }
+        }
+
+        function loadProfileForm(targetUser) {
+            const userToLoad = targetUser || selectedUserForEdit || currentUser;
+            if (!userToLoad) return;
+
+            document.getElementById('profileNama').value = userToLoad.Nama || userToLoad.nama || '';
+            document.getElementById('profileNik').value = userToLoad.NIK || userToLoad.nik || '';
+            document.getElementById('profilePos').value = userToLoad.Positions || userToLoad.positions || '';
+            document.getElementById('profileStore').value = userToLoad.Store || userToLoad.store || '';
+            document.getElementById('profileEmail').value = userToLoad["SEED Registered Email"] || userToLoad.email || '';
         }
 
         function saveProfileChanges() {
             if (!currentUser) return;
 
             const updatedData = {
-                nik: currentUser.nik,
+                nik: document.getElementById('profileNik').value.trim(),
                 nama: document.getElementById('profileNama').value.trim(),
+                positions: document.getElementById('profilePos').value.trim(),
                 store: document.getElementById('profileStore').value.trim(),
                 email: document.getElementById('profileEmail').value.trim()
             };
 
             showUploadAlert('Menyimpan perubahan profil ke Google Sheets...', 'success');
 
-            google.script.run
-                .withSuccessHandler(function(response) {
-                    showUploadAlert(response, 'success');
-                    currentUser.nama = updatedData.nama;
-                    currentUser.store = updatedData.store;
-                    currentUser.email = updatedData.email;
-                    document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
-                    fetchOnlineData();
-                })
-                .withFailureHandler(function(err) {
-                    showUploadAlert('Gagal menyimpan profil: ' + err.message, 'error');
-                })
-                .updateMyData(updatedData);
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(response) {
+                        showUploadAlert(response, 'success');
+                        if (!currentUser.isAdmin) {
+                            currentUser.nama = updatedData.nama;
+                            currentUser.store = updatedData.store;
+                            currentUser.email = updatedData.email;
+                            document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
+                        }
+                        fetchOnlineData();
+                    })
+                    .withFailureHandler(function(err) {
+                        showUploadAlert('Gagal menyimpan profil: ' + err.message, 'error');
+                    })
+                    .updateMyData(updatedData);
+            } else {
+                showUploadAlert('Perubahan berhasil diperbarui (Simulasi Demo Mode).', 'success');
+                fetchOnlineData();
+            }
         }
 
         async function fetchOnlineData() {
@@ -1023,11 +1094,20 @@
             document.getElementById('filteredCountBadge').textContent = `${filteredData.length} Data`;
 
             if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400"><i class="fa-solid fa-inbox text-3xl mb-2"></i><p class="text-xs">Tidak ada data</p></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="py-8 text-center text-slate-400"><i class="fa-solid fa-inbox text-3xl mb-2"></i><p class="text-xs">Tidak ada data</p></td></tr>`;
             } else {
                 pageData.forEach((row, index) => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-indigo-50/40 dark:hover:bg-slate-800/40 transition border-b border-slate-100/60 dark:border-slate-800/40";
+                    
+                    const actionButtonHtml = currentUser && currentUser.isAdmin ? `
+                        <td class="py-2.5 px-4 text-center">
+                            <button onclick="editEmployeeByAdmin('${escapeHTML(row["NIK"])}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold transition shadow" title="Edit Profil Karyawan Ini">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                            </button>
+                        </td>
+                    ` : '';
+
                     tr.innerHTML = `
                         <td class="py-2.5 px-4 text-center font-medium">${start + index + 1}</td>
                         <td class="py-2.5 px-4 font-semibold text-slate-900 dark:text-slate-100">${escapeHTML(row["Nama"])}</td>
@@ -1042,6 +1122,7 @@
                         <td class="py-2.5 px-4">${escapeHTML(row["AM"])}</td>
                         <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">${escapeHTML(row["Work Experience"])}</td>
                         <td class="py-2.5 px-4 text-indigo-600 dark:text-indigo-400">${escapeHTML(row["SEED Registered Email"])}</td>
+                        ${actionButtonHtml}
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1085,6 +1166,8 @@
 
         function signOut() {
             currentUser = null;
+            selectedUserForEdit = null;
+            document.getElementById('actionHeader').classList.add('hidden');
             document.getElementById('loginNikInput').value = '';
             document.getElementById('loginErrorMsg').classList.add('hidden');
             document.getElementById('loginOverlay').classList.remove('hidden');
