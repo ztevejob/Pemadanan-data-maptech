@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pemadanan Karyawan - Admin Novi</title>
+    <title>Dashboard Pemadanan Karyawan - Admin Digimap</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,6 +24,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SheetJS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF & autoTable CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -83,21 +86,21 @@
 
 <body class="bg-gradient-to-br from-slate-100 via-slate-200 to-indigo-50/30 dark:from-slate-950 dark:via-darkbg dark:to-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200 overflow-x-auto">
 
-    <!-- ================= LOGIN OVERLAY (MANDIRI & ADMIN) ================= -->
+    <!-- ================= LOGIN OVERLAY (STRICT ADMIN USER) ================= -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
             <div class="text-center mb-6">
                 <div class="bg-indigo-600 text-white w-12 h-12 rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-3">
                     <i class="fa-solid fa-user-shield text-xl"></i>
                 </div>
-                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan & Admin</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK atau Kata Kunci Admin (misal: <strong>Novi</strong>) untuk mengakses sistem.</p>
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan & Admin Digimap</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK Karyawan atau ketik <strong>Admin</strong> khusus untuk superuser.</p>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NIK / ID Akses Admin</label>
-                    <input type="text" id="loginNikInput" placeholder="Contoh: 123456 atau Novi" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NIK / ID Akses</label>
+                    <input type="text" id="loginNikInput" placeholder="Contoh: 123456 atau Admin" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                 </div>
                 <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition">
                     Masuk ke Dashboard
@@ -119,7 +122,7 @@
                     <div class="bg-indigo-600 text-white p-2 rounded-xl flex-shrink-0 shadow-lg shadow-indigo-500/20">
                         <i id="sidebarHeaderIcon" class="fa-solid fa-users-gear text-lg"></i>
                     </div>
-                    <span id="sidebarHeaderTitle" class="sidebar-logo-text font-bold text-white text-base tracking-wide truncate">Dashboard</span>
+                    <span id="sidebarHeaderTitle" class="sidebar-logo-text font-bold text-white text-base tracking-wide truncate">Digimap Dashboard</span>
                 </div>
                 <button onclick="toggleSidebarCollapse()" class="hidden md:flex text-slate-300 hover:text-white p-1 rounded-lg">
                     <i id="collapseIcon" class="fa-solid fa-chevron-left text-sm"></i>
@@ -129,11 +132,15 @@
             <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebarNav">
                 <a href="javascript:void(0)" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold transition shadow-md shadow-indigo-600/20" title="Dashboard">
                     <i class="fa-solid fa-chart-line text-lg w-6 text-center"></i>
-                    <span class="sidebar-text text-sm">Dashboard</span>
+                    <span class="sidebar-text text-sm">Dashboard Digimap</span>
                 </a>
                 <a href="javascript:void(0)" onclick="switchTab('table', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Data Karyawan">
                     <i class="fa-solid fa-users text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Data Karyawan</span>
+                </a>
+                <a href="javascript:void(0)" onclick="switchTab('notrainer', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Toko Tanpa Store Trainer">
+                    <i class="fa-solid fa-user-slash text-lg w-6 text-center"></i>
+                    <span class="sidebar-text text-sm">Toko Tanpa Trainer</span>
                 </a>
                 <a href="javascript:void(0)" onclick="switchTab('charts', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Analisis Store">
                     <i class="fa-solid fa-chart-pie text-lg w-6 text-center"></i>
@@ -167,8 +174,8 @@
                             <i class="fa-solid fa-bars text-lg"></i>
                         </button>
                         <div>
-                            <h1 class="text-base sm:text-lg font-bold tracking-tight" id="pageTitle">Dashboard Pemadanan Karyawan</h1>
-                            <p class="text-xs text-slate-400 hidden sm:block">Monitoring & Analisis Distribusi SDM Toko</p>
+                            <h1 class="text-base sm:text-lg font-bold tracking-tight" id="pageTitle">Dashboard Pemadanan Karyawan Digimap</h1>
+                            <p class="text-xs text-slate-400 hidden sm:block">Monitoring & Analisis Distribusi SDM Khusus Digimap</p>
                         </div>
                     </div>
 
@@ -210,7 +217,7 @@
                                 <i class="fa-solid fa-user-group text-lg"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2"><span id="kpiTotalPct" class="text-indigo-600 dark:text-indigo-400 font-semibold">100%</span> dari total data</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Wilayah Digimap</p>
                     </div>
 
                     <div class="glass-card rounded-xl shadow-lg p-4 transition hover:scale-[1.02]">
@@ -223,7 +230,7 @@
                                 <i class="fa-solid fa-store text-lg"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Toko terdaftar</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Toko Digimap aktif</p>
                     </div>
 
                     <div class="glass-card rounded-xl shadow-lg p-4 transition hover:scale-[1.02]">
@@ -271,10 +278,10 @@
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-filter text-indigo-600 dark:text-indigo-400"></i>
-                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Filter Data Karyawan</h2>
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Filter Data Karyawan Digimap</h2>
                         </div>
                         <span id="activeFilterBadge" class="text-xs font-medium bg-indigo-50 border border-indigo-100 dark:bg-slate-800/80 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-full">
-                            Menampilkan semua data
+                            Menampilkan semua data Digimap
                         </span>
                     </div>
 
@@ -327,7 +334,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
                                 <i class="fa-solid fa-store text-sky-500"></i>
-                                <span>Jumlah Toko per Type Store</span>
+                                <span>Jumlah Toko Digimap per Type</span>
                             </h3>
                         </div>
                         <div class="relative flex-grow min-h-[260px]">
@@ -339,7 +346,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
                                 <i class="fa-solid fa-chart-pie text-indigo-500"></i>
-                                <span>Karyawan per Type Store</span>
+                                <span>Karyawan Digimap per Type Store</span>
                             </h3>
                         </div>
                         <div class="relative flex-grow flex items-center justify-center min-h-[260px]">
@@ -351,7 +358,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
                                 <i class="fa-solid fa-chart-bar text-emerald-500"></i>
-                                <span>Sebaran Jabatan Karyawan</span>
+                                <span>Sebaran Jabatan Digimap</span>
                             </h3>
                         </div>
                         <div class="relative flex-grow min-h-[260px]">
@@ -365,13 +372,13 @@
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-map-location-dot text-indigo-600 dark:text-indigo-400"></i>
-                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Peta Sebaran Lokasi Toko</h2>
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Peta Sebaran Lokasi Toko Digimap</h2>
                         </div>
                     </div>
                     <div class="w-full h-[550px] rounded-xl overflow-hidden relative border border-slate-200/50 dark:border-slate-700/50 shadow-inner flex flex-col md:flex-row">
                         <div class="w-full md:w-80 glass-overlay z-20 p-4 flex flex-col border-b md:border-b-0 md:border-r border-slate-300/40 dark:border-slate-700/40 max-h-[250px] md:max-h-full">
                             <div class="mb-3">
-                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Cari Toko / Lokasi</label>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Cari Toko Digimap</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
                                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -445,12 +452,49 @@
                     </div>
                 </div>
 
+                <!-- Section Toko Tanpa Store Trainer -->
+                <div id="noTrainerSection" class="content-section hidden glass-card rounded-xl shadow-lg p-5 space-y-4">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-200/50 dark:border-slate-700/50 gap-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Ringkasan Toko Digimap Tanpa Store Trainer</h2>
+                            <span id="noTrainerCountBadge" class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Toko</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="exportNoTrainerExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-file-excel"></i>
+                                <span>Export Excel</span>
+                            </button>
+                            <button onclick="exportNoTrainerPDF()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                <span>Export PDF</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-semibold uppercase tracking-wider border-b border-slate-200/50 dark:border-slate-700/50">
+                                <tr>
+                                    <th class="py-3 px-4 w-12 text-center">No</th>
+                                    <th class="py-3 px-4">Nama Toko</th>
+                                    <th class="py-3 px-4">Type Store</th>
+                                    <th class="py-3 px-4">Regional Head (RH)</th>
+                                    <th class="py-3 px-4">Area Manager (AM)</th>
+                                    <th class="py-3 px-4 text-center">Total SDM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="noTrainerTableBody" class="divide-y divide-slate-100/60 dark:divide-slate-700/40 text-slate-600 dark:text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Data Table Section -->
                 <div id="tableSection" class="content-section glass-card rounded-xl shadow-lg overflow-hidden flex flex-col">
                     <div class="p-4 bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-3 backdrop-blur-sm">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-table text-indigo-600 dark:text-indigo-400"></i>
-                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Data Karyawan</h3>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Data Karyawan Digimap</h3>
                             <span id="filteredCountBadge" class="bg-indigo-50 border border-indigo-100 text-indigo-700 dark:bg-indigo-950/70 dark:border-indigo-800 dark:text-indigo-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Data</span>
                         </div>
                         <div class="flex items-center space-x-2 text-xs">
@@ -500,7 +544,7 @@
             <footer class="glass-card border-t border-slate-200/50 dark:border-slate-800/50 py-4 mt-auto transition-colors duration-200">
                 <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <div>
-                        &copy; 2026 Interactive Pemadanan Dashboard &bull; Live Google Sheets Data
+                        &copy; 2026 Interactive Pemadanan Dashboard &bull; Digimap Data Only
                     </div>
                     <div class="font-medium text-indigo-600 dark:text-indigo-400">
                         Created & Designed by <span class="font-semibold text-slate-700 dark:text-slate-200">Novi Riyanto</span>
@@ -541,38 +585,38 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Fungsi Login Mandiri & Admin Novi
+        // Fungsi Login Khusus Superuser "Admin"
         function handleLogin() {
-            const nikInput = document.getElementById('loginNikInput').value.trim();
+            const inputVal = document.getElementById('loginNikInput').value.trim();
             const errDiv = document.getElementById('loginErrorMsg');
             
-            if (!nikInput) {
-                errDiv.textContent = "Silakan masukkan NIK atau User Admin terlebih dahulu.";
+            if (!inputVal) {
+                errDiv.textContent = "Silakan masukkan NIK atau kata kunci Admin.";
                 errDiv.classList.remove('hidden');
                 return;
             }
 
             errDiv.classList.add('hidden');
 
-            // Pengecekan Khusus Akun Admin "Novi"
-            if (nikInput.toLowerCase() === 'novi' || nikInput.toLowerCase() === 'admin') {
+            // Pengecekan Khusus Akun Superuser "Admin"
+            if (inputVal.toLowerCase() === 'admin') {
                 currentUser = {
-                    nama: "Novi Riyanto",
+                    nama: "Administrator",
                     nik: "ADMIN",
-                    positions: "Head Office Trainer / Admin",
+                    positions: "Super Administrator",
                     store: "Head Office",
-                    email: "novi@admin.com",
+                    email: "admin@digimap.co.id",
                     isAdmin: true
                 };
 
                 setupAdminAccess();
                 document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('userSessionBadge').innerHTML = `<i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i> Admin Novi (Superuser)`;
+                document.getElementById('userSessionBadge').innerHTML = `<i class="fa-solid fa-shield-halved text-amber-400 mr-1"></i> Admin (Superuser)`;
                 initDashboard();
                 return;
             }
 
-            // Login Karyawan Standar via Google Apps Script
+            // Login Karyawan Standar via NIK
             if (typeof google !== 'undefined' && google.script && google.script.run) {
                 google.script.run
                     .withSuccessHandler(function(result) {
@@ -583,7 +627,7 @@
                             document.getElementById('userSessionBadge').textContent = `Login: ${result.nama} (${result.nik})`;
                             initDashboard();
                         } else {
-                            errDiv.textContent = "NIK tidak ditemukan di sistem database.";
+                            errDiv.textContent = "NIK tidak ditemukan di sistem database Digimap.";
                             errDiv.classList.remove('hidden');
                         }
                     })
@@ -591,15 +635,15 @@
                         errDiv.textContent = "Terjadi kesalahan koneksi server.";
                         errDiv.classList.remove('hidden');
                     })
-                    .getEmployeeByNik(nikInput);
+                    .getEmployeeByNik(inputVal);
             } else {
-                // Fallback Mode Demo jika dijalankan secara lokal tanpa Google Apps Script Backend
+                // Fallback Demo Mode
                 currentUser = {
-                    nama: nikInput,
-                    nik: nikInput,
+                    nama: inputVal,
+                    nik: inputVal,
                     positions: "Karyawan",
-                    store: "Store Demo",
-                    email: "user@demo.com",
+                    store: "Digimap Store Demo",
+                    email: "user@digimap.co.id",
                     isAdmin: false
                 };
                 document.getElementById('loginOverlay').classList.add('hidden');
@@ -611,10 +655,9 @@
         function setupAdminAccess() {
             document.getElementById('actionHeader').classList.remove('hidden');
             document.getElementById('navProfileText').textContent = "Kelola Profil Karyawan";
-            document.getElementById('profileFormTitle').textContent = "Kelola / Edit Profil Karyawan (Admin Novi)";
-            document.getElementById('profileFormDesc').textContent = "Sebagai Admin, Anda dapat mengedit semua data karyawan di bawah ini.";
+            document.getElementById('profileFormTitle').textContent = "Kelola / Edit Profil Karyawan (Admin)";
+            document.getElementById('profileFormDesc').textContent = "Sebagai Admin, Anda dapat mengedit semua data karyawan Digimap.";
             
-            // Buka semua field yang sebelumnya disabled untuk Admin
             document.getElementById('profileNik').removeAttribute('disabled');
             document.getElementById('profileNik').classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'text-slate-600');
             document.getElementById('profileNik').classList.add('bg-white/80', 'dark:bg-slate-900/80');
@@ -643,31 +686,38 @@
             const sidebarHeaderTitle = document.getElementById('sidebarHeaderTitle');
             const sidebarHeaderIcon = document.getElementById('sidebarHeaderIcon');
 
-            if (tab === 'dashboard') {
+            if (tab === 'notrainer') {
+                sections.forEach(sec => sec.classList.add('hidden'));
+                document.getElementById('noTrainerSection').classList.remove('hidden');
+                pageTitle.textContent = "Daftar Toko Digimap Tanpa Store Trainer";
+                sidebarHeaderTitle.textContent = "Toko Tanpa Trainer";
+                sidebarHeaderIcon.className = "fa-solid fa-user-slash text-lg";
+                renderNoTrainerTable();
+            } else if (tab === 'dashboard') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('kpiSection').classList.remove('hidden');
                 document.getElementById('filterSection').classList.remove('hidden');
                 document.getElementById('chartsSection').classList.remove('hidden');
-                pageTitle.textContent = "Dashboard Pemadanan Karyawan";
-                sidebarHeaderTitle.textContent = "Dashboard";
+                pageTitle.textContent = "Dashboard Pemadanan Karyawan Digimap";
+                sidebarHeaderTitle.textContent = "Digimap Dashboard";
                 sidebarHeaderIcon.className = "fa-solid fa-chart-line text-lg";
             } else if (tab === 'table') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('filterSection').classList.remove('hidden');
                 document.getElementById('tableSection').classList.remove('hidden');
-                pageTitle.textContent = "Data Karyawan";
+                pageTitle.textContent = "Data Karyawan Digimap";
                 sidebarHeaderTitle.textContent = "Data Karyawan";
                 sidebarHeaderIcon.className = "fa-solid fa-users text-lg";
             } else if (tab === 'charts') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('chartsSection').classList.remove('hidden');
-                pageTitle.textContent = "Analisis Store & Grafis";
+                pageTitle.textContent = "Analisis Store & Grafis Digimap";
                 sidebarHeaderTitle.textContent = "Analisis Store";
                 sidebarHeaderIcon.className = "fa-solid fa-chart-pie text-lg";
             } else if (tab === 'map') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('mapSection').classList.remove('hidden');
-                pageTitle.textContent = "Peta Lokasi Toko";
+                pageTitle.textContent = "Peta Lokasi Toko Digimap";
                 sidebarHeaderTitle.textContent = "Peta Lokasi Toko";
                 sidebarHeaderIcon.className = "fa-solid fa-map-location-dot text-lg";
                 renderMapStoreList();
@@ -827,9 +877,22 @@
             if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon text-amber-400';
         }
 
+        // PROSES DATA STRICT HANYA DIGIMAP
         function processUploadedData(data) {
             let validIndex = 1;
-            rawData = data
+            const filteredDigimapRaw = data.filter(item => {
+                const storeStr = String(item["Store"] || item["Toko"] || "").toLowerCase();
+                const typeStoreStr = String(item["Type Store"] || item["Tipe Store"] || "").toLowerCase();
+                
+                // Pastikan mengecualikan brand lain seperti Digiplus atau Samsung
+                if (typeStoreStr.includes('digiplus') || storeStr.includes('digiplus') || storeStr.includes('samsung')) {
+                    return false;
+                }
+                // Hanya menyertakan data yang tergolong Digimap
+                return storeStr.includes('digimap') || storeStr.startsWith('m') || typeStoreStr.includes('digimap') || typeStoreStr.includes('apr') || typeStoreStr.includes('aar');
+            });
+
+            rawData = filteredDigimapRaw
                 .map(item => ({
                     "Store": item["Store"] || item["Toko"] || "",
                     "Nama": item["Nama"] || item["Nama Karyawan"] || "",
@@ -921,11 +984,12 @@
             renderTable();
             updateFilterBadge();
             renderMapStoreList();
+            renderNoTrainerTable();
         }
 
         function updateFilterBadge() {
             const badge = document.getElementById('activeFilterBadge');
-            badge.textContent = filteredData.length === rawData.length ? 'Menampilkan semua data' : `Filtered: ${filteredData.length} dari ${rawData.length} data`;
+            badge.textContent = filteredData.length === rawData.length ? 'Menampilkan semua data Digimap' : `Filtered: ${filteredData.length} dari ${rawData.length} data Digimap`;
         }
 
         function countUniqueValid(data, key) {
@@ -939,9 +1003,6 @@
             document.getElementById('kpiPositions').textContent = countUniqueValid(filteredData, 'Positions').toLocaleString();
             document.getElementById('kpiRH').textContent = countUniqueValid(filteredData, 'RH').toLocaleString();
             document.getElementById('kpiAM').textContent = countUniqueValid(filteredData, 'AM').toLocaleString();
-
-            const totalPct = rawData.length > 0 ? ((filteredData.length / rawData.length) * 100).toFixed(1) : 0;
-            document.getElementById('kpiTotalPct').textContent = `${totalPct}%`;
         }
 
         function groupByValid(data, key) {
@@ -982,7 +1043,7 @@
                 type: 'bar',
                 data: {
                     labels: Object.keys(storeCounts),
-                    datasets: [{ label: 'Jumlah Toko', data: Object.values(storeCounts), backgroundColor: '#0284c7', borderRadius: 6 }]
+                    datasets: [{ label: 'Jumlah Toko Digimap', data: Object.values(storeCounts), backgroundColor: '#0284c7', borderRadius: 6 }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
@@ -1028,6 +1089,135 @@
                     }
                 }
             });
+        }
+
+        // LOGIKA PENGECEKAN TOKO TANPA STORE TRAINER BERDASARKAN KOLOM JABATAN (POSITIONS)
+        function getStoresWithoutTrainerList() {
+            const storeMap = new Map();
+            
+            // Inisialisasi peta toko dari filteredData
+            filteredData.forEach(item => {
+                const storeName = item["Store"];
+                if (isValidValue(storeName)) {
+                    if (!storeMap.has(storeName)) {
+                        storeMap.set(storeName, {
+                            name: storeName,
+                            type: item["Type Store"] || '-',
+                            rh: item["RH"] || '-',
+                            am: item["AM"] || '-',
+                            totalSdm: 0,
+                            hasTrainer: false
+                        });
+                    }
+                    storeMap.get(storeName).totalSdm++;
+                    
+                    // Cek kolom Jabatan / Positions apakah mengandung unsur trainer
+                    const jabatan = String(item["Positions"] || "").toLowerCase();
+                    if (jabatan.includes('trainer') || jabatan.includes('store trainer')) {
+                        storeMap.get(storeName).hasTrainer = true;
+                    }
+                }
+            });
+
+            // Filter toko yang tidak memiliki trainer
+            const noTrainerList = [];
+            storeMap.forEach(storeObj => {
+                if (!storeObj.hasTrainer) {
+                    noTrainerList.push(storeObj);
+                }
+            });
+
+            return noTrainerList.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        function renderNoTrainerTable() {
+            const tbody = document.getElementById('noTrainerTableBody');
+            const badge = document.getElementById('noTrainerCountBadge');
+            if (!tbody) return;
+
+            const noTrainerStores = getStoresWithoutTrainerList();
+            badge.textContent = `${noTrainerStores.length} Toko`;
+
+            if (noTrainerStores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400"><i class="fa-solid fa-circle-check text-emerald-500 text-3xl mb-2"></i><p class="text-xs">Semua toko Digimap sudah memiliki Store Trainer!</p></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = noTrainerStores.map((store, index) => `
+                <tr class="hover:bg-amber-50/40 dark:hover:bg-slate-800/40 transition border-b border-slate-100/60 dark:border-slate-800/40">
+                    <td class="py-2.5 px-4 text-center font-medium">${index + 1}</td>
+                    <td class="py-2.5 px-4 font-semibold text-slate-900 dark:text-slate-100">${escapeHTML(store.name)}</td>
+                    <td class="py-2.5 px-4"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border">${escapeHTML(store.type)}</span></td>
+                    <td class="py-2.5 px-4">${escapeHTML(store.rh)}</td>
+                    <td class="py-2.5 px-4">${escapeHTML(store.am)}</td>
+                    <td class="py-2.5 px-4 text-center font-bold text-indigo-600 dark:text-indigo-400">${store.totalSdm} SDM</td>
+                </tr>
+            `).join('');
+        }
+
+        // EXPORT EXCEL TOKO TANPA TRAINER
+        function exportNoTrainerExcel() {
+            const stores = getStoresWithoutTrainerList();
+            if (stores.length === 0) {
+                alert("Tidak ada data toko tanpa trainer untuk diexport.");
+                return;
+            }
+
+            const exportData = stores.map((s, idx) => ({
+                "No": idx + 1,
+                "Nama Toko": s.name,
+                "Type Store": s.type,
+                "Regional Head (RH)": s.rh,
+                "Area Manager (AM)": s.am,
+                "Total SDM": s.totalSdm
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Toko Tanpa Trainer");
+            XLSX.writeFile(workbook, "Daftar_Toko_Digimap_Tanpa_Store_Trainer.xlsx");
+        }
+
+        // EXPORT PDF TOKO TANPA TRAINER
+        function exportNoTrainerPDF() {
+            const stores = getStoresWithoutTrainerList();
+            if (stores.length === 0) {
+                alert("Tidak ada data toko tanpa trainer untuk diexport.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(14);
+            doc.text("Daftar Toko Digimap Tanpa Store Trainer", 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
+
+            const tableColumn = ["No", "Nama Toko", "Type Store", "Regional Head (RH)", "Area Manager (AM)", "Total SDM"];
+            const tableRows = [];
+
+            stores.forEach((s, idx) => {
+                tableRows.push([
+                    idx + 1,
+                    s.name,
+                    s.type,
+                    s.rh,
+                    s.am,
+                    s.totalSdm
+                ]);
+            });
+
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 28,
+                theme: 'grid',
+                styles: { fontSize: 8, cellPadding: 3 },
+                headStyles: { fillColor: [79, 70, 229] }
+            });
+
+            doc.save("Daftar_Toko_Digimap_Tanpa_Store_Trainer.pdf");
         }
 
         function getStoreEmployeeCount(store) {
