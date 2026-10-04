@@ -86,7 +86,7 @@
 
 <body class="bg-gradient-to-br from-slate-100 via-slate-200 to-indigo-50/30 dark:from-slate-950 dark:via-darkbg dark:to-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200 overflow-x-auto">
 
-    <!-- ================= LOGIN OVERLAY (STRICT ADMIN USER) ================= -->
+    <!-- ================= LOGIN OVERLAY (STRICT ADMIN & ALLOWED NIK) ================= -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
             <div class="text-center mb-6">
@@ -94,13 +94,13 @@
                     <i class="fa-solid fa-user-shield text-xl"></i>
                 </div>
                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan & Admin Digimap</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK Karyawan atau ketik <strong>Admin</strong> khusus untuk superuser.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK Karyawan yang terdaftar atau ketik <strong>Admin</strong> khusus untuk superuser.</p>
             </div>
             
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">NIK / ID Akses</label>
-                    <input type="text" id="loginNikInput" placeholder="Contoh: 123456 atau Admin" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                    <input type="text" id="loginNikInput" placeholder="Contoh: 1601355421006... atau Admin" class="w-full px-3.5 py-2.5 text-xs bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
                 </div>
                 <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition">
                     Masuk ke Dashboard
@@ -558,6 +558,91 @@
     <script>
         const ONLINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8IQlrRqX-PBTGq7rYZMDi25rjSHtJ_CXKEWVlqYFmuRDyiFA19gKdjqUxxZ9G2fylTl-cPnW2mcJB/pub?output=csv';
 
+        // Daftar NIK yang diizinkan masuk
+        const ALLOWED_NIKS = [
+            "1601355421006139", "21006673", "21007249", "21009633", "22000134", "22001405", "22001536", "22003150", 
+            "22003151", "22004022", "22004301", "22004305", "22005584", "22007749", "22008136", "22008140", 
+            "22008148", "22008157", "22008213", "22008230", "22008232", "22008234", "22013466", "22013473", 
+            "22013474", "22014163", "22014166", "22014183", "22014185", "22014188", "22015206", "22015737", 
+            "22015740", "22015996", "22015999", "22016004", "22019006", "22019072", "22019711", "22021368", 
+            "22021374", "22021385", "22021388", "22021400", "22021403", "22023589", "22023599", "22023641", 
+            "22024673", "22024675", "22024679", "23000176", "23000177", "23000182", "23002934", "23003248", 
+            "23005218", "23005222", "23007057", "23007058", "23007065", "23009411", "23010954", "23011345", 
+            "23011350", "23013372", "23013873", "23014336", "23014344", "23014486", "23014489", "23014490", 
+            "23014580", "23015133", "23015135", "23015538", "23016661", "23016718", "23016930", "23017343", 
+            "23017391", "23017392", "23017642", "23018195", "23018488", "23018496", "23018541", "23022440", 
+            "23022609", "23022673", "23022700", "23022701", "23022704", "23022856", "23022857", "23024009", 
+            "23024161", "23026437", "23026699", "23027884", "23028627", "23028661", "23028812", "23028823", 
+            "23028864", "23028912", "23028917", "23028918", "23029147", "23029994", "23029995", "23030085", 
+            "23030863", "23031079", "24002640", "24002669", "24002724", "24002727", "24002728", "24002730", 
+            "24002731", "24002766", "24002768", "24003410", "24003413", "24003444", "24003447", "24003476", 
+            "24004259", "24004357", "24004478", "24004544", "24004573", "24004753", "24004757", "24004802", 
+            "24004809", "24004834", "24004839", "24004840", "24004841", "24004931", "24006020", "24006108", 
+            "24006258", "24006316", "24006401", "24007797", "24007871", "24007993", "24008497", "24008502", 
+            "24008551", "24008552", "24008554", "24008738", "24009001", "24009019", "24009032", "24009035", 
+            "24009045", "24009049", "24009050", "24009055", "24009063", "24009109", "24009585", "24009673", 
+            "24009874", "24009876", "24009877", "24010166", "24010370", "24010371", "24010373", "24010374", 
+            "24010376", "24010377", "24010379", "24010383", "24010445", "24011217", "24011218", "24011408", 
+            "24011551", "24011552", "24011553", "24011558", "24011561", "24011564", "24011565", "24011566", 
+            "24011567", "24011568", "24011789", "24011790", "24011865", "24012032", "24012033", "24012394", 
+            "24012904", "24013207", "24013228", "24013247", "24013324", "24013425", "24013738", "24013739", 
+            "24014523", "24014525", "24014745", "24015023", "24015032", "24015077", "24015104", "24015262", 
+            "24015317", "24015318", "24015373", "24015437", "24015489", "24016229", "24016230", "24016303", 
+            "24016324", "24016718", "24017074", "24017389", "24017390", "24017391", "24017392", "24017828", 
+            "24017830", "24017881", "24018124", "24018125", "24018129", "24018130", "24018219", "24018230", 
+            "24018376", "24018409", "24018501", "24018591", "24018633", "24019357", "24019468", "24019681", 
+            "24019814", "24020190", "24020196", "24021388", "24021517", "24021689", "24022415", "24022633", 
+            "24022692", "24022695", "24022779", "24022846", "24022937", "24023175", "24023345", "24023765", 
+            "24023766", "24023775", "24023795", "24024133", "24024472", "24024604", "25000144", "25000724", 
+            "25000845", "25000846", "25000847", "25000852", "25001087", "25001088", "25001111", "25001144", 
+            "25001145", "25001330", "25001497", "25001888", "25001973", "25002388", "25002773", "25002953", 
+            "25003037", "25003086", "25003136", "25003287", "25003289", "25003364", "25003368", "25003371", 
+            "25003628", "25003839", "25004557", "25004844", "25004891", "25004895", "25005342", "25005647", 
+            "25005823", "25005917", "25006079", "25007242", "25007254", "25007270", "25007325", "25007537", 
+            "25007585", "25007660", "25007701", "25007718", "25007754", "25008114", "25008363", "25008384", 
+            "25008446", "25008591", "25008818", "25008927", "25008939", "25008942", "25008962", "25009020", 
+            "25009193", "25009195", "25010328", "25010845", "25011587", "25011589", "25011629", "25012100", 
+            "25012123", "25012357", "25012422", "25012460", "25012839", "25012905", "25012906", "25012907", 
+            "25012917", "25013078", "25013156", "25013165", "25013166", "25013171", "25013172", "25013173", 
+            "25013174", "25013199", "25013200", "25013300", "25013376", "25013607", "25013670", "25014797", 
+            "25014807", "25015091", "25015834", "25016858", "25017048", "25017093", "25017136", "25017172", 
+            "25017650", "25017683", "25017787", "25017826", "25017941", "25017942", "25017987", "25018184", 
+            "25018185", "25018186", "25018280", "25018306", "25018309", "25018310", "25018311", "25018461", 
+            "25018506", "25018633", "25018847", "25018857", "25018926", "25018927", "25019129", "25019199", 
+            "25019244", "25019253", "25019254", "25019333", "25019365", "25019459", "25019653", "25019654", 
+            "25019655", "25020190", "25020191", "25020343", "25020475", "25020783", "25021178", "25021192", 
+            "25021317", "25021447", "25021483", "25021569", "25021575", "25021576", "25021581", "25021582", 
+            "25021585", "25021649", "25021650", "25021651", "25021749", "25021750", "25021752", "25021753", 
+            "25021755", "25021958", "25022064", "25022065", "25022358", "25022882", "25023185", "25023270", 
+            "25023279", "25023376", "25023729", "25023873", "25023942", "25023943", "25023945", "25024034", 
+            "25024035", "25024165", "25024168", "26024298", "26024321", "26024322", "26024346", "26024484", 
+            "26024499", "26024519", "26024665", "26024779", "26024810", "26024811", "26024842", "26024843", 
+            "26024942", "26024943", "26025058", "26025079", "26025170", "26025731", "26025732", "26025733", 
+            "26026099", "26026364", "26026415", "26026438", "26026439", "26026486", "26026568", "26026808", 
+            "26026809", "26026810", "26026875", "26026876", "26027237", "26027314", "26027376", "26027434", 
+            "26027465", "26027696", "26027697", "26027742", "26027759", "26027768", "26027770", "26027774", 
+            "26027910", "26027935", "26027936", "26028075", "26028149", "26028236", "26028237", "26028296", 
+            "26028347", "26028432", "26028504", "26028507", "26028835", "26028929", "26029064", "26029094", 
+            "26029096", "26029235", "26029247", "26029339", "26029376", "26029382", "26029648", "26029656", 
+            "26029679", "26029756", "26029773", "26029805", "26029872", "26029918", "26029929", "26030010", 
+            "26030225", "26030546", "26030720", "26031160", "26031261", "26031319", "26031380", "26031384", 
+            "26031491", "26031572", "26031619", "26031672", "26031825", "26031838", "26031842", "26032079", 
+            "26032400", "26032401", "26032428", "26032524", "26032643", "26032670", "26032788", "26032873", 
+            "26033085", "26033317", "26033325", "26033334", "26033345", "26033358", "26033395", "26033712", 
+            "26033738", "26034097", "26034249", "26034344", "26034439", "26034477", "26034606", "26034661", 
+            "26034704", "26034720", "26034780", "26034789", "26035053", "26035061", "26035070", "26035081", 
+            "26035115", "26035289", "26035379", "26035643", "26035648", "26035782", "26035962", "26035966", 
+            "26036006", "26036007", "26036039", "26036063", "26036124", "26036128", "26036141", "26036178", 
+            "26036217", "26036230", "26036238", "26036252", "26036292", "26036293", "26036405", "26036673", 
+            "26036808", "26036824", "26036825", "26036826", "26036827", "26036829", "26036837", "26036845", 
+            "26036847", "26036848", "26036851", "26036878", "26036879", "26036880", "26036881", "26036926", 
+            "26037019", "26037197", "26037263", "26037392", "26037411", "26037412", "26037453", "26037460", 
+            "26037466", "26037636", "26037840", "26038020", "26038324", "26038351", "26038352", "26038529", 
+            "26038721", "26038738", "26038806", "26038831", "26038836", "26039258", "26039259", "26039401", 
+            "26039689", "26039848", "26040046", "26040048", "26040049", "26040320", "26040426", "26040783", 
+            "22023590", "24016762", "24021228"
+        ];
+
         let currentUser = null;
         let selectedUserForEdit = null;
         let rawData = [];
@@ -585,13 +670,13 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Fungsi Login Khusus Superuser "Admin"
+        // Fungsi Login Khusus Admin dan NIK Terpilih
         function handleLogin() {
             const inputVal = document.getElementById('loginNikInput').value.trim();
             const errDiv = document.getElementById('loginErrorMsg');
             
             if (!inputVal) {
-                errDiv.textContent = "Silakan masukkan NIK atau kata kunci Admin.";
+                errDiv.textContent = "Silakan masukkan NIK Karyawan atau kata kunci Admin.";
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -616,7 +701,16 @@
                 return;
             }
 
-            // Login Karyawan Standar via NIK
+            // Validasi NIK berdasarkan daftar yang diizinkan
+            const isAllowedNik = ALLOWED_NIKS.includes(inputVal);
+
+            if (!isAllowedNik) {
+                errDiv.textContent = "Maaf, NIK tersebut tidak terdaftar atau dilarang masuk.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Jika terdaftar di ALLOWED_NIKS, proses login via Google Apps Script atau Fallback Demo
             if (typeof google !== 'undefined' && google.script && google.script.run) {
                 google.script.run
                     .withSuccessHandler(function(result) {
@@ -627,21 +721,39 @@
                             document.getElementById('userSessionBadge').textContent = `Login: ${result.nama} (${result.nik})`;
                             initDashboard();
                         } else {
-                            errDiv.textContent = "NIK tidak ditemukan di sistem database Digimap.";
-                            errDiv.classList.remove('hidden');
+                            currentUser = {
+                                nama: "Karyawan Digimap",
+                                nik: inputVal,
+                                positions: "Staff",
+                                store: "Digimap Store",
+                                email: "employee@digimap.co.id",
+                                isAdmin: false
+                            };
+                            document.getElementById('loginOverlay').classList.add('hidden');
+                            document.getElementById('userSessionBadge').textContent = `Login: Karyawan (${inputVal})`;
+                            initDashboard();
                         }
                     })
                     .withFailureHandler(function(error) {
-                        errDiv.textContent = "Terjadi kesalahan koneksi server.";
-                        errDiv.classList.remove('hidden');
+                        currentUser = {
+                            nama: "Karyawan Digimap",
+                            nik: inputVal,
+                            positions: "Staff",
+                            store: "Digimap Store",
+                            email: "employee@digimap.co.id",
+                            isAdmin: false
+                        };
+                        document.getElementById('loginOverlay').classList.add('hidden');
+                        document.getElementById('userSessionBadge').textContent = `Login: Karyawan (${inputVal})`;
+                        initDashboard();
                     })
                     .getEmployeeByNik(inputVal);
             } else {
-                // Fallback Demo Mode
+                // Fallback Demo Mode jika dijalankan secara lokal
                 currentUser = {
-                    nama: inputVal,
+                    nama: "Karyawan NIK " + inputVal,
                     nik: inputVal,
-                    positions: "Karyawan",
+                    positions: "Karyawan Digimap",
                     store: "Digimap Store Demo",
                     email: "user@digimap.co.id",
                     isAdmin: false
@@ -1095,7 +1207,6 @@
         function getStoresWithoutTrainerList() {
             const storeMap = new Map();
             
-            // Inisialisasi peta toko dari filteredData
             filteredData.forEach(item => {
                 const storeName = item["Store"];
                 if (isValidValue(storeName)) {
@@ -1111,7 +1222,6 @@
                     }
                     storeMap.get(storeName).totalSdm++;
                     
-                    // Cek kolom Jabatan / Positions apakah mengandung unsur trainer
                     const jabatan = String(item["Positions"] || "").toLowerCase();
                     if (jabatan.includes('trainer') || jabatan.includes('store trainer')) {
                         storeMap.get(storeName).hasTrainer = true;
@@ -1119,7 +1229,6 @@
                 }
             });
 
-            // Filter toko yang tidak memiliki trainer
             const noTrainerList = [];
             storeMap.forEach(storeObj => {
                 if (!storeObj.hasTrainer) {
