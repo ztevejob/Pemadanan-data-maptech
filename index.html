@@ -403,7 +403,7 @@
                     </div>
                 </div>
 
-                <!-- Section My Profil (Tampilan disesuaikan dengan gambar referensi) -->
+                <!-- Section My Profil -->
                 <div id="profileSection" class="content-section hidden glass-card rounded-xl shadow-lg p-6 max-w-xl mx-auto">
                     <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
@@ -422,7 +422,6 @@
                                     <td class="w-1/3 bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Employee name</td>
                                     <td class="w-2/3 bg-fuchsia-400 dark:bg-fuchsia-950/80 p-3.5">
                                         <select id="profileNameSelect" class="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold px-3 py-1.5 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="onMyProfileSelected(this.value)">
-                                            <!-- Diisi secara dinamis -->
                                         </select>
                                     </td>
                                 </tr>
@@ -701,13 +700,12 @@
                 return;
             }
 
-            // Set User Login NIK biasa
             currentUser = {
                 nama: "Karyawan NIK " + inputVal,
                 nik: inputVal,
                 positions: "Staff",
-                store: "-",
-                email: "-",
+                store: "",
+                email: "",
                 isAdmin: false
             };
 
@@ -721,7 +719,6 @@
             document.getElementById('actionHeader').classList.remove('hidden');
             document.getElementById('navProfileText').textContent = "My Profil";
             
-            // Aktifkan semua menu sidebar untuk admin
             ['navDashboard', 'navNoTrainer', 'navCharts'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'flex';
@@ -732,7 +729,6 @@
             document.getElementById('actionHeader').classList.add('hidden');
             document.getElementById('navProfileText').textContent = "My Profil";
             
-            // Kunci menu non-esensial untuk user NIK (hanya Data Karyawan, Peta, dan My Profil yang boleh)
             ['navDashboard', 'navNoTrainer', 'navCharts'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
@@ -740,7 +736,6 @@
         }
 
         function switchTab(tab, element) {
-            // Jika user NIK mencoba akses menu terlarang, paksa alihkan ke 'table' atau 'profile'
             if (currentUser && !currentUser.isAdmin) {
                 if (['dashboard', 'notrainer', 'charts'].includes(tab)) {
                     tab = 'table';
@@ -821,12 +816,11 @@
             const select = document.getElementById('profileNameSelect');
             select.innerHTML = '';
 
-            // Jika user NIK biasa, cari data yang sesuai dengan NIK miliknya
             let userList = rawData;
             if (currentUser && !currentUser.isAdmin) {
                 userList = rawData.filter(d => String(d.NIK).trim() === String(currentUser.nik).trim());
                 if (userList.length === 0) {
-                    userList = rawData; // fallback jika NIK belum termuat di CSV
+                    userList = rawData;
                 }
             }
 
@@ -974,6 +968,14 @@
                 .filter(item => isValidValue(item["Nama"]) || isValidValue(item["NIK"]))
                 .map(item => ({ "No.": validIndex++, ...item }));
 
+            // Jika user login menggunakan NIK, temukan dan simpan data tokonya untuk pembatasan tabel
+            if (currentUser && !currentUser.isAdmin) {
+                const matchedEmp = rawData.find(d => String(d.NIK).trim() === String(currentUser.nik).trim());
+                if (matchedEmp) {
+                    currentUser.store = matchedEmp.Store;
+                }
+            }
+
             populateFilterDropdowns();
             applyFilters();
         }
@@ -999,7 +1001,6 @@
             initDarkMode();
             fetchOnlineData();
             
-            // Jika user NIK login, langsung arahkan ke tab Data Karyawan (tabel)
             if (currentUser && !currentUser.isAdmin) {
                 switchTab('table', document.getElementById('navTable'));
             }
@@ -1036,6 +1037,13 @@
             const trainerHO = document.getElementById('filterTrainerHO').value;
 
             filteredData = rawData.filter(item => {
+                // Jika user login dengan NIK biasa, batasi hanya data dari toko miliknya sendiri
+                if (currentUser && !currentUser.isAdmin && currentUser.store) {
+                    if (String(item["Store"]).trim().toLowerCase() !== String(currentUser.store).trim().toLowerCase()) {
+                        return false;
+                    }
+                }
+
                 const matchSearch = !search || 
                     (isValidValue(item["Nama"]) && item["Nama"].toLowerCase().includes(search)) ||
                     (isValidValue(item["NIK"]) && item["NIK"].toString().toLowerCase().includes(search)) ||
@@ -1060,7 +1068,8 @@
 
         function updateFilterBadge() {
             const badge = document.getElementById('activeFilterBadge');
-            badge.textContent = filteredData.length === rawData.length ? 'Menampilkan semua data Digimap' : `Filtered: ${filteredData.length} dari ${rawData.length} data Digimap`;
+            const totalScope = (currentUser && !currentUser.isAdmin) ? rawData.filter(d => String(d["Store"]).trim().toLowerCase() === String(currentUser.store).trim().toLowerCase()).length : rawData.length;
+            badge.textContent = filteredData.length === totalScope ? 'Menampilkan data Digimap' : `Filtered: ${filteredData.length} dari ${totalScope} data`;
         }
 
         function countUniqueValid(data, key) {
