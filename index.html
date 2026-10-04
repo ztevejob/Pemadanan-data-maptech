@@ -403,7 +403,7 @@
                     </div>
                 </div>
 
-                <!-- Section My Profil -->
+                <!-- Section My Profil (Lengkap dengan informasi tambahan) -->
                 <div id="profileSection" class="content-section hidden glass-card rounded-xl shadow-lg p-6 max-w-xl mx-auto">
                     <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
@@ -411,7 +411,7 @@
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-slate-900 dark:text-white">My Profil</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Informasi detail data karyawan Anda.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Informasi detail data lengkap karyawan.</p>
                         </div>
                     </div>
 
@@ -419,27 +419,47 @@
                         <table class="w-full border-collapse">
                             <tbody>
                                 <tr class="border-b border-slate-300 dark:border-slate-700">
-                                    <td class="w-1/3 bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Employee name</td>
-                                    <td class="w-2/3 bg-fuchsia-400 dark:bg-fuchsia-950/80 p-3.5">
+                                    <td class="w-1/3 bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Employee Name</td>
+                                    <td class="w-2/3 bg-fuchsia-400 dark:bg-fuchsia-950/80 p-3">
                                         <select id="profileNameSelect" class="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold px-3 py-1.5 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="onMyProfileSelected(this.value)">
                                         </select>
                                     </td>
                                 </tr>
                                 <tr class="border-b border-slate-300 dark:border-slate-700">
-                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Store</td>
-                                    <td id="profileStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">NIK</td>
+                                    <td id="profileNikVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
                                 </tr>
                                 <tr class="border-b border-slate-300 dark:border-slate-700">
-                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Type Store</td>
-                                    <td id="profileTypeStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Positions</td>
+                                    <td id="profilePositionsVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
                                 </tr>
                                 <tr class="border-b border-slate-300 dark:border-slate-700">
-                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">NIK</td>
-                                    <td id="profileNikVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Store</td>
+                                    <td id="profileStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Type Store</td>
+                                    <td id="profileTypeStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Regional Head (RH)</td>
+                                    <td id="profileRhVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Area Manager (AM)</td>
+                                    <td id="profileAmVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Trainer HO</td>
+                                    <td id="profileTrainerHoVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Work Experience</td>
+                                    <td id="profileExpVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
                                 </tr>
                                 <tr>
-                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Work Experience</td>
-                                    <td id="profileExpVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">SEED Registered Email</td>
+                                    <td id="profileEmailVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3 font-medium text-slate-800 dark:text-slate-200">-</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -850,10 +870,15 @@
         }
 
         function updateProfileCardDetails(emp) {
+            document.getElementById('profileNikVal').textContent = emp.NIK || '-';
+            document.getElementById('profilePositionsVal').textContent = emp.Positions || '-';
             document.getElementById('profileStoreVal').textContent = emp.Store || '-';
             document.getElementById('profileTypeStoreVal').textContent = emp["Type Store"] || '-';
-            document.getElementById('profileNikVal').textContent = emp.NIK || '-';
+            document.getElementById('profileRhVal').textContent = emp.RH || '-';
+            document.getElementById('profileAmVal').textContent = emp.AM || '-';
+            document.getElementById('profileTrainerHoVal').textContent = emp["Trainer HO"] || '-';
             document.getElementById('profileExpVal').textContent = emp["Work Experience"] || '-';
+            document.getElementById('profileEmailVal').textContent = emp["SEED Registered Email"] || '-';
         }
 
         async function fetchOnlineData() {
@@ -968,7 +993,6 @@
                 .filter(item => isValidValue(item["Nama"]) || isValidValue(item["NIK"]))
                 .map(item => ({ "No.": validIndex++, ...item }));
 
-            // Jika user login menggunakan NIK, temukan dan simpan data tokonya untuk pembatasan tabel
             if (currentUser && !currentUser.isAdmin) {
                 const matchedEmp = rawData.find(d => String(d.NIK).trim() === String(currentUser.nik).trim());
                 if (matchedEmp) {
@@ -1037,7 +1061,6 @@
             const trainerHO = document.getElementById('filterTrainerHO').value;
 
             filteredData = rawData.filter(item => {
-                // Jika user login dengan NIK biasa, batasi hanya data dari toko miliknya sendiri
                 if (currentUser && !currentUser.isAdmin && currentUser.store) {
                     if (String(item["Store"]).trim().toLowerCase() !== String(currentUser.store).trim().toLowerCase()) {
                         return false;
