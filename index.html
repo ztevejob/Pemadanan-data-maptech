@@ -86,7 +86,7 @@
 
 <body class="bg-gradient-to-br from-slate-100 via-slate-200 to-indigo-50/30 dark:from-slate-950 dark:via-darkbg dark:to-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200 overflow-x-auto">
 
-    <!-- ================= LOGIN OVERLAY (STRICT ADMIN & ALLOWED NIK) ================= -->
+    <!-- ================= LOGIN OVERLAY ================= -->
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
             <div class="text-center mb-6">
@@ -94,7 +94,6 @@
                     <i class="fa-solid fa-user-shield text-xl"></i>
                 </div>
                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Portal Karyawan & Admin Digimap</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Masukkan NIK Karyawan yang terdaftar atau ketik <strong>Admin</strong> khusus untuk superuser.</p>
             </div>
             
             <div class="space-y-4">
@@ -130,29 +129,29 @@
             </div>
 
             <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scrollbar" id="sidebarNav">
-                <a href="javascript:void(0)" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold transition shadow-md shadow-indigo-600/20" title="Dashboard">
+                <a href="javascript:void(0)" id="navDashboard" onclick="switchTab('dashboard', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold transition shadow-md shadow-indigo-600/20" title="Dashboard">
                     <i class="fa-solid fa-chart-line text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Dashboard Digimap</span>
                 </a>
-                <a href="javascript:void(0)" onclick="switchTab('table', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Data Karyawan">
+                <a href="javascript:void(0)" id="navTable" onclick="switchTab('table', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Data Karyawan">
                     <i class="fa-solid fa-users text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Data Karyawan</span>
                 </a>
-                <a href="javascript:void(0)" onclick="switchTab('notrainer', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Toko Tanpa Store Trainer">
+                <a href="javascript:void(0)" id="navNoTrainer" onclick="switchTab('notrainer', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Toko Tanpa Store Trainer">
                     <i class="fa-solid fa-user-slash text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Toko Tanpa Trainer</span>
                 </a>
-                <a href="javascript:void(0)" onclick="switchTab('charts', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Analisis Store">
+                <a href="javascript:void(0)" id="navCharts" onclick="switchTab('charts', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Analisis Store">
                     <i class="fa-solid fa-chart-pie text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Analisis Store</span>
                 </a>
-                <a href="javascript:void(0)" onclick="switchTab('map', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Peta Lokasi Toko">
+                <a href="javascript:void(0)" id="navMap" onclick="switchTab('map', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Peta Lokasi Toko">
                     <i class="fa-solid fa-map-location-dot text-lg w-6 text-center"></i>
                     <span class="sidebar-text text-sm">Peta Lokasi Toko</span>
                 </a>
-                <a href="javascript:void(0)" onclick="switchTab('profile', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="Profil & Edit Mandiri">
+                <a href="javascript:void(0)" id="navProfile" onclick="switchTab('profile', this)" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-white transition font-medium" title="My Profil">
                     <i class="fa-solid fa-user-pen text-lg w-6 text-center"></i>
-                    <span class="sidebar-text text-sm" id="navProfileText">Edit Profil Saya</span>
+                    <span class="sidebar-text text-sm" id="navProfileText">My Profil</span>
                 </a>
             </nav>
 
@@ -404,51 +403,47 @@
                     </div>
                 </div>
 
-                <!-- Section Profil & Edit Mandiri / Admin -->
-                <div id="profileSection" class="content-section hidden glass-card rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
+                <!-- Section My Profil (Tampilan disesuaikan dengan gambar referensi) -->
+                <div id="profileSection" class="content-section hidden glass-card rounded-xl shadow-lg p-6 max-w-xl mx-auto">
                     <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-200/50 dark:border-slate-700/50">
                         <div class="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl">
-                            <i id="profileHeaderIcon" class="fa-solid fa-user-pen text-xl"></i>
+                            <i class="fa-solid fa-user text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-white" id="profileFormTitle">Edit Profil Mandiri</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400" id="profileFormDesc">Anda dapat mengubah data profil di bawah ini.</p>
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white">My Profil</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Informasi detail data karyawan Anda.</p>
                         </div>
                     </div>
 
-                    <div class="space-y-4 text-xs">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Karyawan</label>
-                                <input type="text" id="profileNama" class="w-full p-2.5 border rounded-xl bg-white/80 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-medium">
-                            </div>
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1" id="profileNikLabel">NIK (Read-only)</label>
-                                <input type="text" id="profileNik" disabled class="w-full p-2.5 border rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 font-medium">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Jabatan / Posisi</label>
-                                <input type="text" id="profilePos" disabled class="w-full p-2.5 border rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400">
-                            </div>
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Store / Toko</label>
-                                <input type="text" id="profileStore" class="w-full p-2.5 border rounded-xl bg-white/80 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">SEED Registered Email</label>
-                            <input type="email" id="profileEmail" class="w-full p-2.5 border rounded-xl bg-white/80 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100">
-                        </div>
-
-                        <div class="pt-4 flex justify-end">
-                            <button onclick="saveProfileChanges()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/25 transition">
-                                Simpan Perubahan Profil
-                            </button>
-                        </div>
+                    <div class="overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900 text-xs">
+                        <table class="w-full border-collapse">
+                            <tbody>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="w-1/3 bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Employee name</td>
+                                    <td class="w-2/3 bg-fuchsia-400 dark:bg-fuchsia-950/80 p-3.5">
+                                        <select id="profileNameSelect" class="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold px-3 py-1.5 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="onMyProfileSelected(this.value)">
+                                            <!-- Diisi secara dinamis -->
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Store</td>
+                                    <td id="profileStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Type Store</td>
+                                    <td id="profileTypeStoreVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-300 dark:border-slate-700">
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">NIK</td>
+                                    <td id="profileNikVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-slate-200/80 dark:bg-slate-800 p-3.5 font-bold text-slate-800 dark:text-slate-200 border-r border-slate-300 dark:border-slate-700">Work Experience</td>
+                                    <td id="profileExpVal" class="bg-sky-100/70 dark:bg-slate-900/60 p-3.5 font-medium text-slate-800 dark:text-slate-200">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -558,7 +553,6 @@
     <script>
         const ONLINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8IQlrRqX-PBTGq7rYZMDi25rjSHtJ_CXKEWVlqYFmuRDyiFA19gKdjqUxxZ9G2fylTl-cPnW2mcJB/pub?output=csv';
 
-        // Daftar NIK yang diizinkan masuk
         const ALLOWED_NIKS = [
             "1601355421006139", "21006673", "21007249", "21009633", "22000134", "22001405", "22001536", "22003150", 
             "22003151", "22004022", "22004301", "22004305", "22005584", "22007749", "22008136", "22008140", 
@@ -670,7 +664,6 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Fungsi Login Khusus Admin dan NIK Terpilih
         function handleLogin() {
             const inputVal = document.getElementById('loginNikInput').value.trim();
             const errDiv = document.getElementById('loginErrorMsg');
@@ -683,7 +676,6 @@
 
             errDiv.classList.add('hidden');
 
-            // Pengecekan Khusus Akun Superuser "Admin"
             if (inputVal.toLowerCase() === 'admin') {
                 currentUser = {
                     nama: "Administrator",
@@ -701,86 +693,61 @@
                 return;
             }
 
-            // Validasi NIK berdasarkan daftar yang diizinkan
             const isAllowedNik = ALLOWED_NIKS.includes(inputVal);
 
             if (!isAllowedNik) {
                 errDiv.textContent = "Maaf, NIK tersebut tidak terdaftar atau dilarang masuk.";
-                errDiv.classList.remove('hidden');
+                errDiv.classList.add('hidden');
                 return;
             }
 
-            // Jika terdaftar di ALLOWED_NIKS, proses login via Google Apps Script atau Fallback Demo
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(function(result) {
-                        if (result && result.found) {
-                            currentUser = result;
-                            currentUser.isAdmin = false;
-                            document.getElementById('loginOverlay').classList.add('hidden');
-                            document.getElementById('userSessionBadge').textContent = `Login: ${result.nama} (${result.nik})`;
-                            initDashboard();
-                        } else {
-                            currentUser = {
-                                nama: "Karyawan Digimap",
-                                nik: inputVal,
-                                positions: "Staff",
-                                store: "Digimap Store",
-                                email: "employee@digimap.co.id",
-                                isAdmin: false
-                            };
-                            document.getElementById('loginOverlay').classList.add('hidden');
-                            document.getElementById('userSessionBadge').textContent = `Login: Karyawan (${inputVal})`;
-                            initDashboard();
-                        }
-                    })
-                    .withFailureHandler(function(error) {
-                        currentUser = {
-                            nama: "Karyawan Digimap",
-                            nik: inputVal,
-                            positions: "Staff",
-                            store: "Digimap Store",
-                            email: "employee@digimap.co.id",
-                            isAdmin: false
-                        };
-                        document.getElementById('loginOverlay').classList.add('hidden');
-                        document.getElementById('userSessionBadge').textContent = `Login: Karyawan (${inputVal})`;
-                        initDashboard();
-                    })
-                    .getEmployeeByNik(inputVal);
-            } else {
-                // Fallback Demo Mode jika dijalankan secara lokal
-                currentUser = {
-                    nama: "Karyawan NIK " + inputVal,
-                    nik: inputVal,
-                    positions: "Karyawan Digimap",
-                    store: "Digimap Store Demo",
-                    email: "user@digimap.co.id",
-                    isAdmin: false
-                };
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
-                initDashboard();
-            }
+            // Set User Login NIK biasa
+            currentUser = {
+                nama: "Karyawan NIK " + inputVal,
+                nik: inputVal,
+                positions: "Staff",
+                store: "-",
+                email: "-",
+                isAdmin: false
+            };
+
+            setupNikUserAccess();
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('userSessionBadge').textContent = `Login: NIK (${inputVal})`;
+            initDashboard();
         }
 
         function setupAdminAccess() {
             document.getElementById('actionHeader').classList.remove('hidden');
-            document.getElementById('navProfileText').textContent = "Kelola Profil Karyawan";
-            document.getElementById('profileFormTitle').textContent = "Kelola / Edit Profil Karyawan (Admin)";
-            document.getElementById('profileFormDesc').textContent = "Sebagai Admin, Anda dapat mengedit semua data karyawan Digimap.";
+            document.getElementById('navProfileText').textContent = "My Profil";
             
-            document.getElementById('profileNik').removeAttribute('disabled');
-            document.getElementById('profileNik').classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'text-slate-600');
-            document.getElementById('profileNik').classList.add('bg-white/80', 'dark:bg-slate-900/80');
-            document.getElementById('profileNikLabel').textContent = "NIK (Dapat Diedit Admin)";
+            // Aktifkan semua menu sidebar untuk admin
+            ['navDashboard', 'navNoTrainer', 'navCharts'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'flex';
+            });
+        }
 
-            document.getElementById('profilePos').removeAttribute('disabled');
-            document.getElementById('profilePos').classList.remove('bg-slate-100', 'dark:bg-slate-800/60', 'text-slate-600');
-            document.getElementById('profilePos').classList.add('bg-white/80', 'dark:bg-slate-900/80');
+        function setupNikUserAccess() {
+            document.getElementById('actionHeader').classList.add('hidden');
+            document.getElementById('navProfileText').textContent = "My Profil";
+            
+            // Kunci menu non-esensial untuk user NIK (hanya Data Karyawan, Peta, dan My Profil yang boleh)
+            ['navDashboard', 'navNoTrainer', 'navCharts'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
         }
 
         function switchTab(tab, element) {
+            // Jika user NIK mencoba akses menu terlarang, paksa alihkan ke 'table' atau 'profile'
+            if (currentUser && !currentUser.isAdmin) {
+                if (['dashboard', 'notrainer', 'charts'].includes(tab)) {
+                    tab = 'table';
+                    element = document.getElementById('navTable');
+                }
+            }
+
             const sections = document.querySelectorAll('.content-section');
             const navItems = document.querySelectorAll('.nav-item');
             
@@ -836,10 +803,10 @@
             } else if (tab === 'profile') {
                 sections.forEach(sec => sec.classList.add('hidden'));
                 document.getElementById('profileSection').classList.remove('hidden');
-                pageTitle.textContent = currentUser && currentUser.isAdmin ? "Kelola Profil Karyawan" : "Edit Profil Saya";
-                sidebarHeaderTitle.textContent = currentUser && currentUser.isAdmin ? "Kelola Profil" : "Profil Saya";
+                pageTitle.textContent = "My Profil Karyawan";
+                sidebarHeaderTitle.textContent = "My Profil";
                 sidebarHeaderIcon.className = "fa-solid fa-user-pen text-lg";
-                loadProfileForm();
+                loadMyProfileData();
             }
 
             if (window.innerWidth < 768) {
@@ -850,59 +817,49 @@
             }
         }
 
-        function editEmployeeByAdmin(nik) {
-            const emp = rawData.find(item => String(item.NIK).trim() === String(nik).trim());
-            if (emp) {
-                selectedUserForEdit = emp;
-                switchTab('profile');
-                loadProfileForm(emp);
+        function loadMyProfileData() {
+            const select = document.getElementById('profileNameSelect');
+            select.innerHTML = '';
+
+            // Jika user NIK biasa, cari data yang sesuai dengan NIK miliknya
+            let userList = rawData;
+            if (currentUser && !currentUser.isAdmin) {
+                userList = rawData.filter(d => String(d.NIK).trim() === String(currentUser.nik).trim());
+                if (userList.length === 0) {
+                    userList = rawData; // fallback jika NIK belum termuat di CSV
+                }
+            }
+
+            userList.forEach((emp, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = emp.Nama || 'Tanpa Nama';
+                if (currentUser && !currentUser.isAdmin && String(emp.NIK).trim() === String(currentUser.nik).trim()) {
+                    opt.selected = true;
+                }
+                select.appendChild(opt);
+            });
+
+            if (userList.length > 0) {
+                updateProfileCardDetails(userList[select.value || 0]);
             }
         }
 
-        function loadProfileForm(targetUser) {
-            const userToLoad = targetUser || selectedUserForEdit || currentUser;
-            if (!userToLoad) return;
-
-            document.getElementById('profileNama').value = userToLoad.Nama || userToLoad.nama || '';
-            document.getElementById('profileNik').value = userToLoad.NIK || userToLoad.nik || '';
-            document.getElementById('profilePos').value = userToLoad.Positions || userToLoad.positions || '';
-            document.getElementById('profileStore').value = userToLoad.Store || userToLoad.store || '';
-            document.getElementById('profileEmail').value = userToLoad["SEED Registered Email"] || userToLoad.email || '';
+        function onMyProfileSelected(index) {
+            let userList = rawData;
+            if (currentUser && !currentUser.isAdmin) {
+                userList = rawData.filter(d => String(d.NIK).trim() === String(currentUser.nik).trim());
+                if (userList.length === 0) userList = rawData;
+            }
+            const emp = userList[index] || userList[0];
+            if (emp) updateProfileCardDetails(emp);
         }
 
-        function saveProfileChanges() {
-            if (!currentUser) return;
-
-            const updatedData = {
-                nik: document.getElementById('profileNik').value.trim(),
-                nama: document.getElementById('profileNama').value.trim(),
-                positions: document.getElementById('profilePos').value.trim(),
-                store: document.getElementById('profileStore').value.trim(),
-                email: document.getElementById('profileEmail').value.trim()
-            };
-
-            showUploadAlert('Menyimpan perubahan profil ke Google Sheets...', 'success');
-
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(function(response) {
-                        showUploadAlert(response, 'success');
-                        if (!currentUser.isAdmin) {
-                            currentUser.nama = updatedData.nama;
-                            currentUser.store = updatedData.store;
-                            currentUser.email = updatedData.email;
-                            document.getElementById('userSessionBadge').textContent = `Login: ${currentUser.nama} (${currentUser.nik})`;
-                        }
-                        fetchOnlineData();
-                    })
-                    .withFailureHandler(function(err) {
-                        showUploadAlert('Gagal menyimpan profil: ' + err.message, 'error');
-                    })
-                    .updateMyData(updatedData);
-            } else {
-                showUploadAlert('Perubahan berhasil diperbarui (Simulasi Demo Mode).', 'success');
-                fetchOnlineData();
-            }
+        function updateProfileCardDetails(emp) {
+            document.getElementById('profileStoreVal').textContent = emp.Store || '-';
+            document.getElementById('profileTypeStoreVal').textContent = emp["Type Store"] || '-';
+            document.getElementById('profileNikVal').textContent = emp.NIK || '-';
+            document.getElementById('profileExpVal').textContent = emp["Work Experience"] || '-';
         }
 
         async function fetchOnlineData() {
@@ -948,7 +905,7 @@
 
             if (isHidden) {
                 sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
+                backdrop.classList.add('hidden');
             } else {
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('hidden');
@@ -989,18 +946,15 @@
             if (icon) icon.className = isDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon text-amber-400';
         }
 
-        // PROSES DATA STRICT HANYA DIGIMAP
         function processUploadedData(data) {
             let validIndex = 1;
             const filteredDigimapRaw = data.filter(item => {
                 const storeStr = String(item["Store"] || item["Toko"] || "").toLowerCase();
                 const typeStoreStr = String(item["Type Store"] || item["Tipe Store"] || "").toLowerCase();
                 
-                // Pastikan mengecualikan brand lain seperti Digiplus atau Samsung
                 if (typeStoreStr.includes('digiplus') || storeStr.includes('digiplus') || storeStr.includes('samsung')) {
                     return false;
                 }
-                // Hanya menyertakan data yang tergolong Digimap
                 return storeStr.includes('digimap') || storeStr.startsWith('m') || typeStoreStr.includes('digimap') || typeStoreStr.includes('apr') || typeStoreStr.includes('aar');
             });
 
@@ -1044,6 +998,11 @@
         function initDashboard() {
             initDarkMode();
             fetchOnlineData();
+            
+            // Jika user NIK login, langsung arahkan ke tab Data Karyawan (tabel)
+            if (currentUser && !currentUser.isAdmin) {
+                switchTab('table', document.getElementById('navTable'));
+            }
         }
 
         function populateFilterDropdowns() {
@@ -1203,7 +1162,6 @@
             });
         }
 
-        // LOGIKA PENGECEKAN TOKO TANPA STORE TRAINER BERDASARKAN KOLOM JABATAN (POSITIONS)
         function getStoresWithoutTrainerList() {
             const storeMap = new Map();
             
@@ -1264,7 +1222,6 @@
             `).join('');
         }
 
-        // EXPORT EXCEL TOKO TANPA TRAINER
         function exportNoTrainerExcel() {
             const stores = getStoresWithoutTrainerList();
             if (stores.length === 0) {
@@ -1287,7 +1244,6 @@
             XLSX.writeFile(workbook, "Daftar_Toko_Digimap_Tanpa_Store_Trainer.xlsx");
         }
 
-        // EXPORT PDF TOKO TANPA TRAINER
         function exportNoTrainerPDF() {
             const stores = getStoresWithoutTrainerList();
             if (stores.length === 0) {
@@ -1401,7 +1357,7 @@
                     
                     const actionButtonHtml = currentUser && currentUser.isAdmin ? `
                         <td class="py-2.5 px-4 text-center">
-                            <button onclick="editEmployeeByAdmin('${escapeHTML(row["NIK"])}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold transition shadow" title="Edit Profil Karyawan Ini">
+                            <button onclick="editEmployeeByAdmin('${escapeHTML(row["NIK"])}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold transition shadow" title="Edit Profil">
                                 <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
                             </button>
                         </td>
